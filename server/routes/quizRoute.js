@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/authMiddleware');
-const { createQuiz, getQuizzes, shareQuiz, takeQuiz, submitQuiz } = require('../controller/quizController');
+const { createQuiz, getAllQuizzesByUser, updateQuiz, getQuizById, getQuizByIdForUpdate, deleteQuiz, checkQuizAnswers } = require('../controller/quizController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-router.post('/createquiz', auth, createQuiz);
-router.get('/quizzes', auth, getQuizzes);
-router.post('/quiz/:id/share', shareQuiz);
-router.get('/quiz/:id', takeQuiz);
-router.post('/quiz/:id/submit', submitQuiz);
+router.post('/createquiz', authMiddleware, createQuiz);
+router.get('/user-quizzes/:id', authMiddleware, getAllQuizzesByUser);
+router.put('/quizzes/:quizId/update', authMiddleware, updateQuiz);
+router.get('/quizzes/:quizId', getQuizById);
+router.post('/quizzes/:quizId/edit', getQuizByIdForUpdate);
+router.delete('/quizzes/:quizId/delete', authMiddleware, deleteQuiz);
+router.post('/quizzes/:quizId/answers', checkQuizAnswers);
 
 module.exports = router;

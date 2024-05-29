@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styles from "./Register.module.css";
 import { authRegister } from "../../api/apiAuth";
+import { toast } from "react-toastify";
 
-const Register = ({onSuccess}) => {
+const Register = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,20 +20,41 @@ const Register = ({onSuccess}) => {
   };
 
   const handleFormSubmit = async () => {
-    if (!formData.name || !formData.email || !formData.password || !confirmPassword) {
-      alert("Please enter all required fields");
-      console.log(formData);
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !confirmPassword
+    ) {
+      toast.warn("Please fill in all the required fields", {
+        position: "bottom-right",
+        theme: "dark",
+      });
       return;
     }
 
     if (formData.password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.warn("Passwords do not match", {
+        position: "bottom-right",
+        theme: "dark",
+      });
       return;
     }
 
-    await authRegister(formData);
-    console.log("formData", formData);
-    onSuccess();
+    try {
+      await authRegister(formData);
+      toast.success("User has been registered", {
+        position: "bottom-right",
+        theme: "dark",
+      });
+      // console.log("formData", formData);
+      onSuccess();
+    } catch (error) {
+      toast.error("Registration failed", {
+        position: "bottom-right",
+        theme: "dark",
+      });
+    }
   };
 
   return (
@@ -85,7 +107,7 @@ const Register = ({onSuccess}) => {
           </span>
         </div>
         <button onClick={handleFormSubmit} className={styles.toggleBtn}>
-          Sign Up
+          Sign-Up
         </button>
       </div>
     </>

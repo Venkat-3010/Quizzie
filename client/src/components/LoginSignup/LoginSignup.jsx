@@ -16,16 +16,16 @@ const LoginSignup = () => {
         <b className={styles.heading}>QUIZZIE</b>
         <div className={styles.btnGrp}>
           <button
-            className={`${styles.authBtn} ${isLogin ? styles.selected : ""}`}
-            onClick={() => setIsLogin(true)}
-          >
-            Login
-          </button>
-          <button
             className={`${styles.authBtn} ${!isLogin ? styles.selected : ""}`}
             onClick={() => setIsLogin(false)}
           >
-            Register
+            Sign Up
+          </button>
+          <button
+            className={`${styles.authBtn} ${isLogin ? styles.selected : ""}`}
+            onClick={() => setIsLogin(true)}
+          >
+            Log In
           </button>
         </div>
         {isLogin ? <Login /> : <Register onSuccess={toggleToLogin}/>}

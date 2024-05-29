@@ -1,4 +1,5 @@
 import axios from "axios";
+import {toast} from "react-toastify"
 const authUrl = "http://localhost:3010/api/user";
 
 const authRegister = async ({ name, email, password }) => {
@@ -9,10 +10,10 @@ const authRegister = async ({ name, email, password }) => {
       password,
     });
     console.log("response", response.data);
-    return;
+    return response.data;
   } catch (error) {
-    console.log("error", error);
-    alert('Something went wrong', error.message);
+    // console.log("error", error);
+    toast.warn('Something went wrong', error.message);
   }
 };
 
@@ -33,7 +34,7 @@ const authLogin = async ({ email, password }) => {
     return response.data;
     }catch(error){
         console.log("error", error);
-        alert('Something went wrong', error.message);
+        toast.warn('Something went wrong', error.message);
     }
 };
 
