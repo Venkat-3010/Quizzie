@@ -30,7 +30,7 @@ mongoose.connect(process.env.MongoDB_URL)
   });
 
 app.use("/api/user", userRoutes);
-app.use("/api/quiz", quizRoutes);
+app.use("/quizapi", quizRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

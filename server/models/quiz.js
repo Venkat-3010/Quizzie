@@ -10,19 +10,43 @@ const quizSchema = new Schema(
     questions: [
       {
         question: String,
-        optionsType: [
+        optionsType: {
+          type: String,
+          enum: ["text", "imageUrl", "both"],
+          required: true,
+        },
+        options: [
           {
             type: String,
-            imageUrl: String,
+            required: true,
           },
         ],
-        answer: String,
-        timer: [Number],
+        rightAnswer: {
+          type: String,
+          required: true,
+        },
+        totalParticipants: {
+          type: Number,
+          default: 0,
+        },
+        wrongAnswerCount: {
+          type: Number,
+          default: 0,
+        },
+        correctAnswerCount: {
+          type: Number,
+          default: 0,
+        },
       },
     ],
+    timer: {
+      type: Number,
+      required: true,
+    },
     type: { type: String, enum: ["Q&A", "Poll"], required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    impressions: { type: String, default: 0 },
+    impressions: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now() },
   },
   {
     timestamps: true,
