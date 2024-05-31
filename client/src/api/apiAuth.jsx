@@ -29,6 +29,7 @@ const authLogin = async ({ email, password }) => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("name", response.data.name);
         localStorage.setItem("email", response.data.email);
+        localStorage.setItem("id", response.data.id);
     }
     console.log("response", response.data);
     return response.data;

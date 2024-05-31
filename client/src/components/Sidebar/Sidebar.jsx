@@ -5,15 +5,14 @@ import line from "/vectorLine.png";
 import Logout from "../Logout/Logout";
 import { toast } from "react-toastify";
 
-const Sidebar = () => {
+const Sidebar = ({ selectedItem, setSelectedItem, onOpenModal }) => {
   const navigate = useNavigate();
-  const [selectedItem, setSelectedItem] = useState("Dashboard");
 
   const handleLogout = async () => {
     localStorage.clear();
-    toast.info('Logged out', {
-      position: 'bottom-right',
-      theme: 'dark',
+    toast.info("Logged out", {
+      position: "bottom-right",
+      theme: "dark",
     });
     navigate("/");
   };
@@ -39,7 +38,9 @@ const Sidebar = () => {
           className={`${styles.dashboardBtn} ${
             selectedItem === "Dashboard" ? styles.selected : ""
           }`}
-          onClick={() => handleMenu("Dashboard")}
+          onClick={() => {
+            handleMenu("Dashboard");
+          }}
         >
           <b className={styles.dashboard}>Dashboard</b>
         </div>
@@ -55,14 +56,17 @@ const Sidebar = () => {
           className={`${styles.createQuizBtn} ${
             selectedItem === "Create Quiz" ? styles.selected : ""
           }`}
-          onClick={() => handleMenu("Create Quiz")}
+          onClick={() => {
+            handleMenu("Create Quiz");
+            onOpenModal();
+          }}
         >
           <b className={styles.createQuiz}>Create Quiz</b>
         </div>
       </div>
       <div className={styles.logoutBtn}>
         <img src={line} className={styles.img} alt="" />
-        <Logout onClick={handleLogout} className={styles.logout}/>
+        <Logout onClick={handleLogout} className={styles.logout} />
       </div>
     </div>
   );

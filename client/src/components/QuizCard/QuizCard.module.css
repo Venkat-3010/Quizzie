@@ -1,0 +1,27 @@
+.quizCardContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.quizCard{
+    min-width: 250px;
+    min-height: 110px;
+    width: 100%;
+    flex-grow: 1;
+    border-radius: 10px;
+    font-size: 30px;
+    background-color: #ffffff;
+    border: none;
+    text-align: center;
+    font-weight: 600;
+    margin: 5px auto 0;
+    padding: 24px 74px;
+}
+
+.textSpan{
+    display: flex;
+    gap: 1rem;
+}

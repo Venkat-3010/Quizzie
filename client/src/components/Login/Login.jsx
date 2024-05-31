@@ -34,7 +34,7 @@ const Login = () => {
         theme: "dark",
       });
       console.log("Successfully logged in", result);
-      navigate('/dashboard');
+      navigate('/home');
     }
   };
 

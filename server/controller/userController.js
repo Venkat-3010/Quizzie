@@ -70,7 +70,7 @@ const userLogin = async (req, res) => {
     );
     res.json({
       message: "User logged in successfully",
-      token: token,
+      token,
       id: userDetails.id,
       name: userDetails.name,
       email: userDetails.email,
