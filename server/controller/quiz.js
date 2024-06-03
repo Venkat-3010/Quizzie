@@ -1,5 +1,5 @@
-const Quiz = require("../models/Quiz");
-const User = require("../models/User");
+const Quiz = require("../models/quiz");
+const User = require("../models/user");
 
 const createQuiz = async (req, res) => {
   const { title, questions, type, timer } = req.body;
@@ -164,7 +164,7 @@ const checkQuizAnswers = async (req, res) => {
 
 const getQuizByIdForUpdate = async (req, res) => {
   const { id } = req.params;
-  const { questions, timer } = req.body;
+  const { title, timer } = req.body;
   try {
     const quiz = await Quiz.findOne({ _id: id, createdBy: req.user });
     if (!quiz) {

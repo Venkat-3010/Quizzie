@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-const quizUrl = "http://localhost:3010/quizapi";
+const quizUrl = "https://quizzie-33a2.onrender.com/quizapi";
 
 const createQuiz = async (quizData) => {
   try {

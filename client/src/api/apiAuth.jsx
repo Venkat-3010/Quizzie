@@ -1,6 +1,6 @@
 import axios from "axios";
 import {toast} from "react-toastify"
-const authUrl = "http://localhost:3010/api/user";
+const authUrl = "https://quizzie-33a2.onrender.com/api/user";
 
 const authRegister = async ({ name, email, password }) => {
   try {
