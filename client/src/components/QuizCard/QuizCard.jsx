@@ -30,12 +30,12 @@ const QuizCard = ({id}) => {
   ];
 
 
-  useEffect(() => {
-    quizDetails();
-    alQuizzes();
-  })
+  // useEffect(() => {
+  //   quizDetails();
+  //   alQuizzes();
+  // })
 
-  const quizDetails
+  // const quizDetails
 
   return (
     <div className={styles.quizCardContainer}>
