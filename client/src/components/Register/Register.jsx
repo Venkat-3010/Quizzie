@@ -33,6 +33,22 @@ const Register = ({ onSuccess }) => {
       return;
     }
 
+    if(!formData.email.includes('@')){
+      toast.warn("Please enter a valid email", {
+        position: "bottom-right",
+        theme: "dark",
+      });
+      return;
+    }
+
+    if(!formData.password.length < 8){
+      toast.warn("Password must be at least 8 characters", {
+        position: "bottom-right",
+        theme: "dark",
+      });
+      return;
+    }
+
     if (formData.password !== confirmPassword) {
       toast.warn("Passwords do not match", {
         position: "bottom-right",

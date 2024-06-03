@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./Login.module.css";
 import { authLogin } from "../../api/apiAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { QuizzieContext } from "../../App";
 
 const Login = () => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(QuizzieContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -33,36 +35,38 @@ const Login = () => {
         position: "bottom-right",
         theme: "dark",
       });
+
+      navigate("/home");
+      setIsLoggedIn(true);
       console.log("Successfully logged in", result);
-      navigate('/home');
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.formInputs}>
-      <span>
-        <label htmlFor="email" className={styles.label}>
-          Email
-        </label>
-        <input
-          type="email"
-          name="email"
-          className={styles.input}
-          onChange={handleFormChange}
-        />
-      </span>
-      <span>
-        <label htmlFor="password" className={styles.label}>
-          Password
-        </label>
-        <input
-          type="password"
-          name="password"
-          className={styles.input}
-          onChange={handleFormChange}
-        />
-      </span>
+        <span>
+          <label htmlFor="email" className={styles.label}>
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            className={styles.input}
+            onChange={handleFormChange}
+          />
+        </span>
+        <span>
+          <label htmlFor="password" className={styles.label}>
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            className={styles.input}
+            onChange={handleFormChange}
+          />
+        </span>
       </div>
       <button className={styles.toggleBtn} onClick={handleFormSubmit}>
         Login

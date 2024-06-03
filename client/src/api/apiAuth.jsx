@@ -13,7 +13,17 @@ const authRegister = async ({ name, email, password }) => {
     return response.data;
   } catch (error) {
     // console.log("error", error);
-    toast.warn('Something went wrong', error.message);
+    if(error.response && error.response.data.message === "User already exists"){
+      toast.warn('User already exists', error.message, {
+        theme: 'dark',
+        position: 'bottom-right',
+      });
+    }else {
+      toast.warn('Something went wrong', error.message, {
+        theme: 'dark',
+        position: 'bottom-right',
+      });
+    }
   }
 };
 
@@ -35,7 +45,10 @@ const authLogin = async ({ email, password }) => {
     return response.data;
     }catch(error){
         console.log("error", error);
-        toast.warn('Something went wrong', error.message);
+        toast.warn('Something went wrong', error.message, {
+          theme: 'dark',
+          position: 'bottom-right',
+        });
     }
 };
 

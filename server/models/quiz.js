@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const questionSchema = new Schema({
+const quizQuestion = new Schema({
   question: {
     type: String,
     required: true,
@@ -11,41 +11,17 @@ const questionSchema = new Schema({
     enum: ["text", "imageUrl", "both"],
     required: true,
   },
-  options: [
-    {
-      type: String,
-      required: true,
-    },{
-    validate: function(val){
-      return val.length >= 2 && val.length <= 4
-    }}
-  ],
-  pollAnswerCount: {
-    type: {
-      "option1" : {
-        type: Number,
-        default: 0,
-      },
-      "option2" : {
-        type: Number,
-        default: 0,
-      },
-      "option3" : {
-        type: Number,
-        default: 0,
-      },
-      "option4" : {
-        type: Number,
-        default: 0,
-      }
-    },
-    default: () => ({}),
+  options: {
+    type: String,
+    required: true,
   },
   rightAnswer: {
     type: String,
-    required: () => this.type === 'Q&A',
+    required: function () {
+      return this.quizType === "Q&A";
+    },
   },
-  totalParticipants: {
+  ParticipantsCount: {
     type: Number,
     default: 0,
   },
@@ -65,18 +41,12 @@ const quizSchema = new Schema(
       type: String,
       required: true,
     },
-    questions: {
-      type: [questionSchema],
-      validate: function (val) {
-        return val.length >= 1 && val.length <= 5;
-      },
-    },
+    questions: [quizQuestion],
     timer: {
-      type: String,
-      enum: ["OFF", "5", "10"],
+      type: Number,
       required: true,
     },
-    type: { type: String, enum: ["Q&A", "Poll"], required: true },
+    quizType: { type: String, enum: ["Q&A", "Poll"], required: true },
     createdBy: { type: String, required: true },
     impressions: { type: Number, default: 0 },
   },

@@ -2,10 +2,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const quizUrl = "http://localhost:3010/quizapi";
 
-const createQuiz = async (quizData, headers) => {
+const createQuiz = async (quizData) => {
   try {
     const response = await axios.post(`${quizUrl}/createquiz`, quizData, {
-      headers: headers,
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      },
     });
     console.log(response.data);
     return response.data;
@@ -15,10 +17,12 @@ const createQuiz = async (quizData, headers) => {
   }
 };
 
-const getAllUserQuizzes = async (headers) => {
+const getAllUserQuizzes = async () => {
   try {
     const response = await axios.get(`${quizUrl}/user-quizzes`, {
-      headers: headers,
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      },
     });
     console.log(response.data);
     return response.data;
@@ -28,10 +32,12 @@ const getAllUserQuizzes = async (headers) => {
   }
 };
 
-const quizAnalysis = async (quizId, headers) => {
+const quizAnalysis = async (quizId) => {
   try {
-    const response = await axios.put(`${quizUrl}/quizzes/${quizId}/analysis`, {
-      headers: headers,
+    const response = await axios.get(`${quizUrl}/quizzes/${quizId}/analysis`, {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      },
     });
     console.log(response.data);
     return response.data;
@@ -52,10 +58,12 @@ const getQuizById = async (quizId) => {
   }
 };
 
-const deleteQuiz = async (quizId, headers) => {
+const deleteQuiz = async (quizId) => {
   try {
     const response = await axios.delete(`${quizUrl}/quizzes/${quizId}/delete`, {
-      headers: headers,
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      },
     });
     console.log(response.data);
     return response.data;
@@ -67,7 +75,7 @@ const deleteQuiz = async (quizId, headers) => {
 
 const checkQuizAnswers = async (id, answers) => {
   try {
-    const response = await axios.post(
+    const response = await axios.patch(
       `${quizUrl}/quizzes/${id}/submit`,
       answers
     );
@@ -79,13 +87,15 @@ const checkQuizAnswers = async (id, answers) => {
   }
 };
 
-const getQuizByIdForUpdate = async (quizId, quizData, headers) => {
+const getQuizByIdForUpdate = async (quizId, quizData) => {
   try {
-    const response = await axios.get(
+    const response = await axios.patch(
       `${quizUrl}/quizzes/${quizId}/update`,
       quizData,
       {
-        headers: headers,
+        headers: {
+          'Authorization': localStorage.getItem('token')
+        },
       }
     );
     console.log(response.data);

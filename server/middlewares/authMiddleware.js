@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const secret = process.env.SECRET_KEY;
 
 const authMiddleware = (req, res) => {
@@ -12,7 +12,7 @@ const authMiddleware = (req, res) => {
 
   try {
     const decoded = jwt.verify(token, secret);
-    req.user = decoded.email;
+    req.user = decoded.user._id;
   } catch (error) {
     console.log("Token verification error:", error);
     res

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./Sidebar.module.css";
 import { useNavigate } from "react-router-dom";
 import line from "/vectorLine.png";
 import Logout from "../Logout/Logout";
 import { toast } from "react-toastify";
+import { QuizzieContex } from "../../App"
 
-const Sidebar = ({ selectedItem, setSelectedItem, onOpenModal }) => {
+const Sidebar = ({ onOpenModal }) => {
+  const {selectedItem, setSelectedItem} = useContext(QuizzieContex)
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -29,7 +31,7 @@ const Sidebar = ({ selectedItem, setSelectedItem, onOpenModal }) => {
   }, []);
 
   return (
-    <div className={styles.sidebarContainer}>
+      <div className={styles.sidebarContainer}>
       <div className={styles.sidebarHeading}>
         <b className={styles.heading}>QUIZZIE</b>
       </div>

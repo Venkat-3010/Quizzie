@@ -3,9 +3,9 @@ const User = require("../models/User");
 
 const createQuiz = async (req, res) => {
   const user = req.user;
-  const { title, questions, type, timer } = req.body;
+  const { title, questions, quizType, timer } = req.body;
 
-  if (!title || !questions || !type) {
+  if (!title || !questions || !quizType) {
     return res.status(400).json({
       message: "All fields are required",
     });
@@ -14,16 +14,18 @@ const createQuiz = async (req, res) => {
   try {
     const newQuiz = new Quiz({
       title,
-      questions: questions.map((q) => ({
-        ...q,
+      questions: questions.map((question) => ({
+        ...question,
         totalParticipants: 0,
         wrongAnswerCount: 0,
         correctAnswerCount: 0,
       })),
-      type,
+      quizType,
       timer,
       createdBy: user,
     });
+    
+    await newQuiz.save();
 
     res
       .status(201)
@@ -64,7 +66,7 @@ const getAllQuizzesByUser = async (req, res) => {
 const QuizAnalysis = async (req, res) => {
   const {id} = req.params
   try {
-    const quiz = await Quiz.One({createdAt: req.user, _id: id});
+    const quiz = await Quiz.findOne({createdAt: req.user, _id: id});
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
@@ -180,13 +182,9 @@ const getQuizByIdForUpdate = async (req, res) => {
         message: "Quiz not found",
       });
     }
-    const updateQuiz = await Quiz.findOneAndUpdate(
-      { _id: id },
-      { questions, timer },
-      {
-        new: true,
-      }
-    );
+    quiz.questions = questions;
+    quiz.timer = timer;
+    const updateQuiz = await quiz.save();
     res.status(200).json({
       success: true,
       message: "Quiz updated successfully",
