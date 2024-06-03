@@ -1,35 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "./QuizCard.module.css";
 
-const QuizCard = () => {
+const QuizCard = ({id}) => {
   const [stats, setStats] = useState({
     totalQuizzes: 0,
     totalQuestions: 0,
     totalImpressions: 0,
   });
-
-  // const handleData = async () => {
-  //   try {
-  //     const totalStats = await getQuizStatistics();
-  //     setStats({
-  //       totalQuizzes: totalStats.totalQuizzes,
-  //       totalQuestions: totalStats.totalQuestions,
-  //       totalImpressions: totalStats.totalImpressions >= 1000 ? (totalStats.totalImpressions / 1000).toFixed(1) + 'K' : totalStats.totalImpressions ,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   handleData();
-  //   const interval = setInterval(() => {
-  //     handleData();
-  //   }, 1000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
 
   const quizTotalItems = [
     {
@@ -51,6 +28,12 @@ const QuizCard = () => {
       color: "#5076FF",
     },
   ];
+
+
+  useEffect(() => {
+    
+  })
+
   return (
     <div className={styles.quizCardContainer}>
       {quizTotalItems.map((item, index) => (

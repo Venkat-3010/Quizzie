@@ -2,38 +2,28 @@ const Quiz = require("../models/Quiz");
 const User = require("../models/User");
 
 const createQuiz = async (req, res) => {
-  const user = req.user;
-  const { title, questions, quizType, timer } = req.body;
+  const { title, questions, type, timer } = req.body;
 
-  if (!title || !questions || !quizType) {
-    return res.status(400).json({
-      message: "All fields are required",
-    });
-  }
+  // if (!title || !questions || !type) {
+  //   return res.status(400).json({
+  //     message: "All fields are required",
+  //   });
+  // }
 
   try {
-    const newQuiz = new Quiz({
+    const newQuiz = await Quiz.create({
       title,
-      questions: questions.map((question) => ({
-        ...question,
-        totalParticipants: 0,
-        wrongAnswerCount: 0,
-        correctAnswerCount: 0,
-      })),
-      quizType,
+      questions,
+      type,
       timer,
-      createdBy: user,
+      // createdBy: req.user._id,
     });
-    
-    await newQuiz.save();
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "Quiz created successfully",
-        id: newQuiz._id,
-      });
+    res.status(201).json({
+      success: true,
+      message: `${title} created successfully`,
+      quiz_id: newQuiz._id,
+    });
   } catch (error) {
     console.log("error creating quiz", error);
     res.status(500).json({
