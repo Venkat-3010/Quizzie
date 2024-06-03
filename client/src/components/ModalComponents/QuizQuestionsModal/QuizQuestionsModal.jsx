@@ -1,5 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import styles from "./QuizQuestionsModal.module.css";
+import { createQuiz } from "../../../api/apiQuiz";
 import { v4 as uuidv4 } from "uuid";
+import QuizTimer from "../QuizTimer/QuizTimer";
+import QuizSuccessModal from "../QuizSuccessModal/QuizSuccessModal";
+import QuestionList from "../QuestionList/QuestionList";
+import QuestionInput from "../QuestionInput/QuestionInput";
+import OptionList from "../OptionList/OptionList";
+import ControlButtons from "../ControlButtons/ControlButtons";
+import axios from "axios";
 
 const QuizQuestionsModal = ({
   onClose,
@@ -10,83 +19,193 @@ const QuizQuestionsModal = ({
   shareQuizLink,
   setShareQuizLink,
 }) => {
-  const initialQuestionState = {
-    id: 1,
+  const initialQuestion = {
+    id: "initial",
     question: "",
-    optionsType: "",
+    optionsType: "text",
     options: {
-      option1: {
-        text: "",
-        imageUrl: "",
-      },
-      option2: {
-        text: "",
-        imageUrl: "",
-      },
+      option1: { text: "", imageUrl: "" },
+      option2: { text: "", imageUrl: "" },
     },
     rightAnswer: "",
   };
 
-  const [quizQuestions, setQuizQuestions] = useState([initialQuestionState]);
-  const [timer, setTimer] = useState([]);
-  const [creationSuccess, setCreationSuccess] = useState(false);
-  const [questionIndex, setQuestionIndex] = useState(1);
+  const [quizQuestions, setQuizQuestions] = useState([initialQuestion]);
+  const [timer, setTimer] = useState("OFF");
+  const [createdQuiz, setCreatedQuiz] = useState(false);
+  const [questionIndex, setQuestionIndex] = useState("initial");
 
   const addExtraQuestion = () => {
-    const newQuestion = [...quizQuestions, ...initialQuestionState];
+    const id = uuidv4();
+    const newQuestion = [...quizQuestions, { ...initialQuestion, id: id }];
     setQuizQuestions(newQuestion);
-    setQuestionIndex(questionIndex + 1);
-    if (quizQuestions[questionIndex].optionsType === "") {
-      quizQuestions[questionIndex].options = "text";
-    }
+    setQuestionIndex(id);
   };
 
-  const deleteExtraQuestion = () => {
-    setQuizQuestions(quizQuestions.slice(0, quizQuestions.length - 1));
-    if (quizQuestions.length > 0) {
-      setQuestionIndex(quizQuestions[questionIndex - 1]);
-      return quizQuestions;
+  const deleteExtraQuestion = (index) => {
+    const newQuestion = quizQuestions.filter((q, i) => i !== index);
+    if (newQuestion.length > 0) {
+      setQuizQuestions(() => {
+        setQuestionIndex(newQuestion[newQuestion.length - 1].id);
+        return newQuestion;
+      });
     } else {
-      setQuestionIndex(1);
-      return quizQuestions;
+      setQuizQuestions(() => {
+        setQuestionIndex("initial");
+        return newQuestion;
+      });
     }
   };
 
-  useEffect(() => {
-    quizQuestions[questionIndex]?.question || "";
-    questionIndex[questionIndex]?.options || [""];
-  }, [questionIndex, quizQuestions]);
-  
-  const validateOptions = (optionsType, options) => {
-    return Object.keys(options).every((option) =>
-      optionsType === "text"
-        ? options[option].text.length > 0
-        : options[option].imageUrl.length > 0
-    );
+  const optionChange = (options, type) => {
+    let newOptionsValues = { ...options };
+    Object.keys(options).forEach((optionKey) => {
+      if (type === "text") {
+        newOptionsValues[optionKey].imageUrl = "";
+      } else if (type === "imageURL") {
+        newOptionsValues[optionKey].text = "";
+      }
+    });
+    return newOptionsValues;
   };
 
-  const validateQuestion = (question) => {
-    const isValidQuestion = question.question.length > 0;
-    const isValidOptions = validateOptions(
-      question.optionsType,
-      question.options
-    );
-    const isValidRightAnswer =
-      question.rightAnswer.length > 0 || quizType !== "Q&A";
+  const handleCreateQuiz = async () => {
+    const validateOptions = (optionsType, options) => {
+      return Object.keys(options).every((option) =>
+        optionsType === "text"
+          ? options[option].text.length > 0
+          : options[option].imageUrl.length > 0
+      );
+    };
 
-    return isValidQuestion && isValidOptions && isValidRightAnswer;
-  };
+    const validateQuestion = (question) => {
+      const isValidQuestion = question.question.length > 0;
+      const isValidOptions = validateOptions(
+        question.optionsType,
+        question.options
+      );
+      const isValidRightAnswer =
+        question.rightAnswer.length > 0 || quizType !== "Q&A";
 
-  const handleCreateQuizQuestions = async () => {
-    const isValidQuizQuestions = quizQuestions.every((question) =>
-      validateQuestion(question)
-    );
-    if (isValidQuizQuestions) {
-      setCreationSuccess(true);
+      return isValidQuestion && isValidOptions && isValidRightAnswer;
+    };
+
+    const isValid = quizQuestions.every(validateQuestion);
+    const createdBy = localStorage.getItem("id");
+
+    if (isValid) {
+      const formData = {
+        title: quizTitle,
+        questions: quizQuestions,
+        timer: timer,
+        createdBy: createdBy,
+        quizType: quizType,
+      };
+
+      try {
+        const data = await createQuiz(formData);
+        if (data) {
+          setCreatedQuiz(true);
+          setShareQuizLink(`${window.location.origin}/sharedQuiz/${data._id}`);
+          setQuiz_id(data.quiz_id);
+          console.log(data);
+        } else {
+          console.error("No data returned from API.");
+        }
+      } catch (error) {
+        console.error("Error creating quiz:", error.message);
+        setCreatedQuiz(false); // Reset createdQuiz state if there's an error
+      }
+    } else {
+      console.log("Invalid form submission");
     }
   };
 
-  return <div></div>;
+  return (
+    <>
+      {!createdQuiz ? (
+        <div className={styles.questionModalContainer}>
+          <QuestionList
+            quizQuestions={quizQuestions}
+            setQuestionIndex={setQuestionIndex}
+            deleteExtraQuestion={deleteExtraQuestion}
+            addExtraQuestion={addExtraQuestion}
+            questionIndex={questionIndex}
+          />
+          <QuestionInput
+            quizQuestions={quizQuestions}
+            questionIndex={questionIndex}
+            setQuizQuestions={setQuizQuestions}
+            quizType={quizType}
+            handleOptionTypeChange={(e) => {
+              const value = e.target.value;
+              const updatedQuestions = quizQuestions.map((question) =>
+                question.id === questionIndex
+                  ? {
+                      ...question,
+                      optionsType: value,
+                      options: optionChange(question.options, value),
+                    }
+                  : question
+              );
+              setQuizQuestions(updatedQuestions);
+            }}
+          />
+          <div className={styles.optionAndTimerContainer}>
+          <OptionList
+            quizQuestions={quizQuestions}
+            questionIndex={questionIndex}
+            setQuizQuestions={setQuizQuestions}
+            handleRemoveOption={(optionKey) => {
+              const newQuestions = quizQuestions.map((question) => {
+                if (question.id === questionIndex) {
+                  const newOptions = { ...question.options };
+                  delete newOptions[optionKey];
+                  return { ...question, options: newOptions };
+                }
+                return question;
+              });
+              setQuizQuestions(newQuestions);
+            }}
+            handleAddOption={() => {
+              const previousOptions = quizQuestions.find(
+                (q) => q.id === questionIndex
+              ).options;
+              const newOptionKey = `option${
+                Object.keys(previousOptions).length + 1
+              }`;
+              const newQuestions = quizQuestions.map((question) =>
+                question.id === questionIndex
+                  ? {
+                      ...question,
+                      options: {
+                        ...previousOptions,
+                        [newOptionKey]: {
+                          text: "",
+                          imageUrl: "",
+                        },
+                      },
+                    }
+                  : question
+              );
+              setQuizQuestions(newQuestions);
+            }}
+            quizType={quizType}
+          />
+          {quizType === "Q&A" && (
+            <QuizTimer timer={timer} setTimer={setTimer} />
+          )}
+          </div>
+          <ControlButtons
+            onClose={onClose}
+            handleCreateQuiz={handleCreateQuiz}
+          />
+        </div>
+      ) : (
+        <QuizSuccessModal shareQuizLink={shareQuizLink} onClose={onClose} />
+      )}
+    </>
+  );
 };
 
 export default QuizQuestionsModal;

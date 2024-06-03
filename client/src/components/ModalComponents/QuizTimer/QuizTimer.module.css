@@ -1,4 +1,4 @@
-.quizTimerContainer{
+.QuizTimerContainer{
     width: 4rem;
     display: flex;
     flex-direction: column;
@@ -23,4 +23,13 @@
     color: #9F9F9F;
     box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
     cursor: pointer;
+}
+
+.selected{
+    background-color: "#60B84B";
+    color: "#fff";
+}
+
+.selected-option{
+    border: "2px solid #60B84B"
 }

@@ -15,8 +15,8 @@ const CreateQuizModal = ({
   setShareQuizLink,
 }) => {
   const [quizData, setQuizData] = useState({
-    title: "",
-    quizType: "",
+    title: quizTitle,
+    quizType: quizType,
   });
 
   const [warning, setWarning] = useState(false);
@@ -36,6 +36,10 @@ const CreateQuizModal = ({
       setShowCreateQuestion(true);
     }
   };
+
+  const handleClose = () => {
+    setShowCreateQuestion(false);
+  }
 
   return (
     <>
@@ -57,8 +61,8 @@ const CreateQuizModal = ({
             type="text"
             className={styles.questionInput}
             value={quizData.title}
-            onChange={(e) =>
-              setQuizData({ ...quizData, title: e.target.value })
+            onChange={(event) =>
+              setQuizData({ ...quizData, title: event.target.value })
             }
             placeholder={
               warning && !quizData.title ? "Quiz Name is required" : "Quiz Name"

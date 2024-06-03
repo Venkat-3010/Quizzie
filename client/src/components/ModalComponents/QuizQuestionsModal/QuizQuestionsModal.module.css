@@ -41,16 +41,7 @@
     position: relative;
 }
 
-.correctOptionStyle {
-    background-color: "#60B84B";
-    color: "#fff";
-  }
-
-.selected {
-    border: "2px solid #60B84B",
-  }
-
-.addQuestion{
+.PlusBtn{
     background-color: #fff;
     border: none;
     /* width: 2.5rem; */
@@ -139,7 +130,6 @@
 }
 .deleteOptionIcon{
     width: 1.1rem;
-    position: absolute;
     right: -1.5rem;
 }
 .addOptionBtn{

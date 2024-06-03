@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import line from "/vectorLine.png";
 import Logout from "../Logout/Logout";
 import { toast } from "react-toastify";
-import { QuizzieContex } from "../../App"
+import { QuizzieContext } from "../../App"
 
 const Sidebar = ({ onOpenModal }) => {
-  const {selectedItem, setSelectedItem} = useContext(QuizzieContex)
+  const {selectedItem, setSelectedItem} = useContext(QuizzieContext)
   const navigate = useNavigate();
 
   const handleLogout = async () => {

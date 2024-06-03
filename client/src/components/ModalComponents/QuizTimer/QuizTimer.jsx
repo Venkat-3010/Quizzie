@@ -6,7 +6,7 @@ const QuizTimer = ({timer, setTimer}) => {
   const handleQuizTimer = (event) => {
     setTime(event.target.value)
     setTimer(event.target.value)
-    console.log(time)
+    // console.log(time)
   }
   return (
     <div className={styles.QuizTimerContainer}>
@@ -17,13 +17,13 @@ const QuizTimer = ({timer, setTimer}) => {
         >
             OFF
         </button>
-        <button className={`${styles.timerOn}${time === 'OFF' ? 'selected' : '' }`}
+        <button className={`${styles.timerOn}${time === '5' ? 'selected' : '' }`}
             onClick={handleQuizTimer}
             value={'5'}
         >
             5 Sec
         </button>
-        <button className={`${styles.timerOn}${time === 'OFF' ? 'selected' : '' }`}
+        <button className={`${styles.timerOn}${time === '10' ? 'selected' : '' }`}
             onClick={handleQuizTimer}
             value={'10'}
         >

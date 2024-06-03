@@ -1,27 +1,79 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const quizQuestion = new Schema({
+const questionSchema = new Schema({
+  id: {
+    type: String, 
+  },
   question: {
     type: String,
     required: true,
   },
   optionsType: {
     type: String,
-    enum: ["text", "imageUrl", "both"],
+    enum: ["text", "imageURL", "textAndImageURL"],
     required: true,
   },
-  options: {
-    type: String,
-    required: true,
-  },
+  options: [
+    {
+      type: {
+        option1: {
+          type: {
+            text: {
+              type: String,
+              default: "",
+            },
+            imageURL: {
+              type: String,
+              default: "",
+            },
+          },
+        },
+        option2: {
+          type: {
+            text: {
+              type: String,
+              default: "",
+            },
+            imageURL: {
+              type: String,
+              default: "",
+            },
+          },
+        },
+        option3: {
+          text: {
+            type: String,
+            default: "",
+          },
+          imageURL: {
+            type: String,
+            default: "",
+          },
+        },
+        option4: {
+          text: {
+            type: String,
+            default: "",
+          },
+          imageURL: {
+            type: String,
+            default: "",
+          },
+        },
+      },
+      validate: function (val) {
+        return val.length >= 2 && val.length <= 4;
+      },
+    },
+  ],
   rightAnswer: {
     type: String,
     required: function () {
       return this.quizType === "Q&A";
     },
   },
-  ParticipantsCount: {
+  totalParticipants: {
     type: Number,
     default: 0,
   },
@@ -37,17 +89,33 @@ const quizQuestion = new Schema({
 
 const quizSchema = new Schema(
   {
+    id: {
+      type: String,
+    },
     title: {
       type: String,
       required: true,
     },
-    questions: [quizQuestion],
+    questions: {
+      type: [questionSchema],
+      validate: function (val) {
+        return val.length >= 1 && val.length <= 5;
+      },
+    },
     timer: {
-      type: Number,
+      type: String,
+      enum: ["OFF", "5", "10"],
       required: true,
     },
-    quizType: { type: String, enum: ["Q&A", "Poll"], required: true },
-    createdBy: { type: String, required: true },
+    type: {
+      type: String,
+      enum: ["Q&A", "Poll"],
+      required: true,
+    },
+    createdBy: {
+      type: String,
+      // required: true
+    },
     impressions: { type: Number, default: 0 },
   },
   {
@@ -55,4 +123,4 @@ const quizSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("QuizModel", quizSchema);
+module.exports = mongoose.model("quizSchemaone", quizSchema);
