@@ -2,7 +2,7 @@ const Quiz = require("../models/quiz");
 const User = require("../models/user");
 
 const createQuiz = async (req, res) => {
-  const { title, questions, type, timer } = req.body;
+  const { title, questions, type, timer, createdBy } = req.body;
 
   // if (!title || !questions || !type) {
   //   return res.status(400).json({
@@ -16,7 +16,7 @@ const createQuiz = async (req, res) => {
       questions,
       type,
       timer,
-      // createdBy: req.user._id,
+      createdBy
     });
 
     res.status(201).json({
@@ -34,15 +34,28 @@ const createQuiz = async (req, res) => {
 };
 
 const getAllQuizzesByUser = async (req, res) => {
+  const {id} = req.params
   try {
-    const user = req.user;
-    const { sortedQuizzes } = req.headers;
-    const quizzes = (await sortedQuizzes)
-      ? await Quiz.find({ createdBy: user }).sort(JSON.parse(sortedQuizzes))
-      : await Quiz.find({ createdBy: user });
+    const quiz = await Quiz.find({ createdBy: id});
+    if(quiz){
+      let sortQuiz = quiz.map(quiz => {
+        let newQuiz = quiz.toObject();
+        newQuiz.questions.forEach(question => {
+          delete question.rightAnswer;
+        })
+        return newQuiz
+      })
+    }
+
+    let sortedImpressions = [...sortQuiz].sort((a, b) => b.impressions - a.impressions);
+    let sortedByDate = [...sortQuiz].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    let trendQuiz = sortedImpressions.filter(quiz => quiz.impressions > 10);
     res.json({
       success: true,
-      quizzes,
+      quizTotal: sortQuiz.length,
+      sortedImpressions: sortedImpressions,
+      sortedByDate: sortedByDate,
+      trendQuiz: trendQuiz
     });
   } catch (error) {
     console.log("error getting quizzes", error);
@@ -79,19 +92,24 @@ const QuizAnalysis = async (req, res) => {
 // for quiz details and impressions on the start page
 const getQuizById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const quiz = await Quiz.findOne({ _id: id });
+    const { quiz_id } = req.params;
+    const quiz = await Quiz.findById(quiz_id);
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
       });
     }
     quiz.impressions += 1;
-    const newQuizData = await quiz.save();
+    
+    let newQuiz = quiz.toObject();
+
+    newQuiz.questions.forEach(question => {
+      delete question.rightAnswer;
+    });
 
     res.status(200).json({
       success: true,
-      quizData: newQuizData,
+      quiz: newQuiz,
       message: "fetching data successful",
     });
   } catch (error) {
@@ -104,14 +122,15 @@ const getQuizById = async (req, res) => {
 
 const deleteQuiz = async (req, res) => {
   try {
-    const { id } = req.params;
-    const quiz = await Quiz.findOne({ _id: id, createdBy: req.user });
+    const userId = req.user.id;
+    const {quiz_id} = req.params;
+    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: req.user.id });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
       });
     }
-    await quiz.deleteOne({ _id: id, createdBy: req.user });
+    await quiz.deleteOne();
     res.status(200).json({
       success: true,
       message: "Quiz deleted successfully",
@@ -126,16 +145,17 @@ const deleteQuiz = async (req, res) => {
 };
 
 const checkQuizAnswers = async (req, res) => {
-  const { id } = req.params;
+  const { quiz_id } = req.body;
 
   try {
-    const quiz = await Quiz.findOne({ _id: id });
+    const quiz = await Quiz.findById(quiz_id);
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
       });
     }
-    const { answers } = req.body;
+
+    const { answers, questions } = req.body;
     let score = 0;
     quiz.questions.forEach((question, index) => {
       if (question.rightAnswer === answers[index]) {
@@ -163,16 +183,17 @@ const checkQuizAnswers = async (req, res) => {
 };
 
 const getQuizByIdForUpdate = async (req, res) => {
-  const { id } = req.params;
-  const { title, timer } = req.body;
+  const { quiz_id } = req.params;
+  const { timer, questions, title } = req.body;
   try {
-    const quiz = await Quiz.findOne({ _id: id, createdBy: req.user });
+    const quiz = await Quiz.findById(quiz_id);
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
       });
     }
     quiz.questions = questions;
+    quiz.title = title;
     quiz.timer = timer;
     const updateQuiz = await quiz.save();
     res.status(200).json({

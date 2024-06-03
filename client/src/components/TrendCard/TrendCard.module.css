@@ -1,0 +1,50 @@
+.TrendCardContainer {
+  display: flex;
+  height: 25rem;
+  width: 100%;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  overflow-y: auto;
+}
+
+.TrendCard {
+  width: 11rem;
+  height: 4.5rem;
+  background-color: white;
+  margin-right: 2rem;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 0px 6px;
+  border-radius: 10px;
+}
+
+.TrendCardName{
+    display: flex;
+    justify-content: space-between;
+}
+
+.createdAt{
+    color: var(--green-color);
+    font-family: var(--font1);
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+.TrendCardImpressions{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 3rem;
+}
+
+.TrendCardTitle{
+    font-family: var(--font1);
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: var(--heading-color);
+}

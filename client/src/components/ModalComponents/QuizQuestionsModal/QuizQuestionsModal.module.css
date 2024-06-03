@@ -174,13 +174,3 @@
     background: #60B84B;
     color: #fff;
 }
-
-
-.errorMessage{
-    color: red;
-    font-size: 0.7rem;
-    font-weight: 400;
-}
-.errorBorder{
-    border: 1.5px solid red;
-}

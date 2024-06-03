@@ -4,11 +4,11 @@ const { createQuiz, getAllQuizzesByUser, QuizAnalysis, getQuizById, getQuizByIdF
 
 
 const authMiddleware = require('../middlewares/authMiddleware');
-router.post('/createquiz', authMiddleware, createQuiz);
-router.get('/user-quizzes', authMiddleware, getAllQuizzesByUser);
-router.get('/quizzes/:id/analysis',authMiddleware, QuizAnalysis);
-router.get('/quizzes/:id', getQuizById);
-router.patch('/quizzes/:id/update', authMiddleware, getQuizByIdForUpdate);
-router.delete('/quizzes/:id/delete', authMiddleware, deleteQuiz);
-router.patch('/quizzes/:id/submit', checkQuizAnswers);
+router.post('/createquiz', createQuiz);
+router.get('/user-quizzes/:id', getAllQuizzesByUser);
+router.get('/quizzes/:quiz_id/analysis', QuizAnalysis);
+router.get('/quizzes/:quiz_id', getQuizById);
+router.patch('/quizzes/:quiz_id/update', getQuizByIdForUpdate);
+router.delete('/quizzes/:id/delete', deleteQuiz);
+router.patch('/quizzes/submit', checkQuizAnswers);
 module.exports = router;

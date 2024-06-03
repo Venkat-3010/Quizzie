@@ -11,8 +11,6 @@ const CreateQuizModal = ({
   setQuizType,
   quiz_id,
   setQuiz_id,
-  shareQuizLink,
-  setShareQuizLink,
 }) => {
   const [quizData, setQuizData] = useState({
     title: quizTitle,
@@ -49,8 +47,6 @@ const CreateQuizModal = ({
           quizType={quizType}
           quiz_id={quiz_id}
           setQuiz_id={setQuiz_id}
-          shareQuizLink={shareQuizLink}
-          setShareQuizLink={setShareQuizLink}
           setQuizType={setQuizType}
           setQuestionPopup={setShowCreateQuestion}
           onClose={handleClose}

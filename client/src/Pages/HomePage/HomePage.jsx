@@ -10,23 +10,14 @@ const HomePage = () => {
   const { selectedItem, setSelectedItem } = useContext(QuizzieContext);
   const [isOpen, setIsOpen] = useState(false);
   const [quiz_id, setQuiz_id] = useState("");
-  const [quizShareLink, setQuizShareLink] = useState(false);
   const [quizTitle, setQuizTitle] = useState("");
   const [quizType, setQuizType] = useState("Q&A");
-  const [user, setUser] = useState(null);
 
   const handleClose = () => {
     setIsOpen(false);
     setSelectedItem("Dashboard");
     // console.log(user)
   };
-
-  useEffect(() => {
-    const userId = localStorage.getItem("id");
-    if (userId) {
-      setUser(userId);
-    }
-  }, []);
 
   return (
     <>
@@ -37,13 +28,11 @@ const HomePage = () => {
           onOpenModal={() => setIsOpen(true)}
         />
         <>
-          {selectedItem === "Dashboard" && <Dashboard id={user} />}
+          {selectedItem === "Dashboard" && <Dashboard />}
           {selectedItem === "Analytics" && (
             <Analytics
               quizType={quizType}
               quiz_id={quiz_id}
-              quizShareLink={quizShareLink}
-              setQuizShareLink={setQuizShareLink}
             />
           )}
           {isOpen && (
@@ -51,8 +40,6 @@ const HomePage = () => {
               <CreateQuizModal
                 quiz_id={quiz_id}
                 setQuiz_id={setQuiz_id}
-                quizShareLink={quizShareLink}
-                setQuizShareLink={setQuizShareLink}
                 quizTitle={quizTitle}
                 setQuizTitle={setQuizTitle}
                 quizType={quizType}

@@ -3,24 +3,7 @@ import styles from "./TrendCard.module.css";
 import { getAllUserQuizzes } from "../../api/apiQuiz";
 import eye from "../../assets/icon-park-outline_eyes.png";
 
-const TrendCard = () => {
-  const [trend, setTrend] = useState([]);
-
-  const getTrend = async () => {
-    try {
-      const response = await getAllUserQuizzes();
-      if(response?.data){ 
-      const trendByImpressions = response.data.filteredImpressions || [];   
-      setTrend(trendByImpressions);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getTrend();
-  }, []);
+const TrendCard = ({trend}) => {
 
   return (
     <div className={styles.TrendCardContainer}>
@@ -35,11 +18,11 @@ const TrendCard = () => {
                     {quiz.impressions >= 1000
                       ? (quiz.impressions / 1000).toFixed(1) + "K"
                       : quiz.impressions}{" "}
-                    <img src={eye} alt="eye" />
+                    <img src={eye} alt="eye" className={styles.img}/>
                   </div>
                 </div>
-                <p className={styles.createAt}>
-                  Created on : {new Date(quiz.createAt).toLocaleDateString()}
+                <p className={styles.createdAt}>
+                  Created on : {new Date(quiz.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </div>

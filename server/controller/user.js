@@ -64,14 +64,14 @@ const userLogin = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { user: { id: userDetails.id } },
+      { user: { _id: userDetails.id } },
       process.env.SECRET_KEY,
       { expiresIn: "60h" }
     );
     res.json({
       message: "User logged in successfully",
       token,
-      id: userDetails.id,
+      _id: userDetails.id,
       name: userDetails.name,
       email: userDetails.email,
     });

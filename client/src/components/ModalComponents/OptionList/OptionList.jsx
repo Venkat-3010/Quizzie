@@ -104,10 +104,10 @@ const OptionList = ({
             )}
             {option !== "option1" && option !== "option2" && (
               <img
-                style={{ width: "10px" }}
                 src={deleteIcon}
                 alt="delete option"
                 onClick={() => handleRemoveOption(option)}
+                className={styles.deleteOptionIcon}
               />
             )}
           </div>

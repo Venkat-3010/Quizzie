@@ -114,7 +114,7 @@ const quizSchema = new Schema(
     },
     createdBy: {
       type: String,
-      // required: true
+      required: true
     },
     impressions: { type: Number, default: 0 },
   },

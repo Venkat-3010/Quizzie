@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./QuizQuestionsModal.module.css";
 import { createQuiz } from "../../../api/apiQuiz";
 import { v4 as uuidv4 } from "uuid";
@@ -9,6 +9,7 @@ import QuestionInput from "../QuestionInput/QuestionInput";
 import OptionList from "../OptionList/OptionList";
 import ControlButtons from "../ControlButtons/ControlButtons";
 import axios from "axios";
+import { QuizzieContext } from "../../../App";
 
 const QuizQuestionsModal = ({
   onClose,
@@ -16,8 +17,6 @@ const QuizQuestionsModal = ({
   quizType,
   quiz_id,
   setQuiz_id,
-  shareQuizLink,
-  setShareQuizLink,
 }) => {
   const initialQuestion = {
     id: "initial",
@@ -29,7 +28,7 @@ const QuizQuestionsModal = ({
     },
     rightAnswer: "",
   };
-
+  const { quizShareLink, setQuizShareLink } = useContext(QuizzieContext);
   const [quizQuestions, setQuizQuestions] = useState([initialQuestion]);
   const [timer, setTimer] = useState("OFF");
   const [createdQuiz, setCreatedQuiz] = useState(false);
@@ -92,23 +91,27 @@ const QuizQuestionsModal = ({
 
     const isValid = quizQuestions.every(validateQuestion);
     const createdBy = localStorage.getItem("id");
+    // console.log(createdBy)
 
     if (isValid) {
-      const formData = {
+      const quizData = {
         title: quizTitle,
         questions: quizQuestions,
         timer: timer,
-        createdBy: createdBy,
-        quizType: quizType,
+        createdBy,
+        type: quizType,
       };
 
       try {
-        const data = await createQuiz(formData);
+        // console.log(quizData);
+        const data = await createQuiz(quizData);
         if (data) {
           setCreatedQuiz(true);
-          setShareQuizLink(`${window.location.origin}/sharedQuiz/${data._id}`);
+          setQuizShareLink(
+            `${window.location.origin}/sharedQuiz/${quizData.createdBy}`
+          );
           setQuiz_id(data.quiz_id);
-          console.log(data);
+          console.log(data, quizShareLink);
         } else {
           console.error("No data returned from API.");
         }
@@ -152,49 +155,49 @@ const QuizQuestionsModal = ({
             }}
           />
           <div className={styles.optionAndTimerContainer}>
-          <OptionList
-            quizQuestions={quizQuestions}
-            questionIndex={questionIndex}
-            setQuizQuestions={setQuizQuestions}
-            handleRemoveOption={(optionKey) => {
-              const newQuestions = quizQuestions.map((question) => {
-                if (question.id === questionIndex) {
-                  const newOptions = { ...question.options };
-                  delete newOptions[optionKey];
-                  return { ...question, options: newOptions };
-                }
-                return question;
-              });
-              setQuizQuestions(newQuestions);
-            }}
-            handleAddOption={() => {
-              const previousOptions = quizQuestions.find(
-                (q) => q.id === questionIndex
-              ).options;
-              const newOptionKey = `option${
-                Object.keys(previousOptions).length + 1
-              }`;
-              const newQuestions = quizQuestions.map((question) =>
-                question.id === questionIndex
-                  ? {
-                      ...question,
-                      options: {
-                        ...previousOptions,
-                        [newOptionKey]: {
-                          text: "",
-                          imageUrl: "",
+            <OptionList
+              quizQuestions={quizQuestions}
+              questionIndex={questionIndex}
+              setQuizQuestions={setQuizQuestions}
+              handleRemoveOption={(optionKey) => {
+                const newQuestions = quizQuestions.map((question) => {
+                  if (question.id === questionIndex) {
+                    const newOptions = { ...question.options };
+                    delete newOptions[optionKey];
+                    return { ...question, options: newOptions };
+                  }
+                  return question;
+                });
+                setQuizQuestions(newQuestions);
+              }}
+              handleAddOption={() => {
+                const previousOptions = quizQuestions.find(
+                  (q) => q.id === questionIndex
+                ).options;
+                const newOptionKey = `option${
+                  Object.keys(previousOptions).length + 1
+                }`;
+                const newQuestions = quizQuestions.map((question) =>
+                  question.id === questionIndex
+                    ? {
+                        ...question,
+                        options: {
+                          ...previousOptions,
+                          [newOptionKey]: {
+                            text: "",
+                            imageUrl: "",
+                          },
                         },
-                      },
-                    }
-                  : question
-              );
-              setQuizQuestions(newQuestions);
-            }}
-            quizType={quizType}
-          />
-          {quizType === "Q&A" && (
-            <QuizTimer timer={timer} setTimer={setTimer} />
-          )}
+                      }
+                    : question
+                );
+                setQuizQuestions(newQuestions);
+              }}
+              quizType={quizType}
+            />
+            {quizType === "Q&A" && (
+              <QuizTimer timer={timer} setTimer={setTimer} />
+            )}
           </div>
           <ControlButtons
             onClose={onClose}
@@ -202,7 +205,7 @@ const QuizQuestionsModal = ({
           />
         </div>
       ) : (
-        <QuizSuccessModal shareQuizLink={shareQuizLink} onClose={onClose} />
+        <QuizSuccessModal quizShareLink={quizShareLink} onClose={onClose} />
       )}
     </>
   );
