@@ -123,4 +123,4 @@ const quizSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("quizSchemaone", quizSchema);
+module.exports = mongoose.model("QuzzieModel", quizSchema);
