@@ -9,6 +9,7 @@
     padding: 17px 8px;
     color: #474444;
     background-color: #ffffff;
+    position: sticky;
 }
 
 .sidebarHeading{

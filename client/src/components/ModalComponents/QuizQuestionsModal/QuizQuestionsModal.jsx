@@ -1,6 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./QuizQuestionsModal.module.css";
-import { createQuiz, getQuizById, getQuizByIdForUpdate } from "../../../api/apiQuiz";
+import {
+  createQuiz,
+  getQuizById,
+  getQuizByIdForUpdate,
+} from "../../../api/apiQuiz";
 import { v4 as uuidv4 } from "uuid";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizSuccessModal from "../QuizSuccessModal/QuizSuccessModal";
@@ -16,7 +20,7 @@ const QuizQuestionsModal = ({
   quizType,
   quiz_id,
   setQuiz_id,
-  updateQuiz
+  updateQuiz,
 }) => {
   const initialQuestion = {
     id: "initial",
@@ -29,29 +33,29 @@ const QuizQuestionsModal = ({
     rightAnswer: "",
   };
 
-  const userId = localStorage.getItem('id');
-  const [update, setUpdate] = useState('');
+  const userId = localStorage.getItem("id");
+  const [update, setUpdate] = useState("");
 
   useEffect(() => {
-    if(updateQuiz){
+    if (updateQuiz) {
       (async () => {
-        try{
+        try {
           const response = await getQuizById(userId);
           setUpdate(response.data.quiz);
-        }catch(error){
-          console.log(error)
+        } catch (error) {
+          console.log(error);
         }
-      })()
+      })();
     }
   }, [updateQuiz]);
 
   useEffect(() => {
-    if(update){
+    if (update) {
       setQuizQuestions(update.Questions);
       setTimer(update.timer);
-      setQuestionIndex(update.questions[0].id)
-        }
-  }, [update])
+      setQuestionIndex(update.questions[0].id);
+    }
+  }, [update]);
   const { quizShareLink, setQuizShareLink } = useContext(QuizzieContext);
   const [quizQuestions, setQuizQuestions] = useState([initialQuestion]);
   const [timer, setTimer] = useState("OFF");
@@ -108,7 +112,8 @@ const QuizQuestionsModal = ({
         question.options
       );
       const isValidRightAnswer =
-        question.rightAnswer.length > 0 || (update.quizType || quizType) !== "Q&A";
+        question.rightAnswer.length > 0 ||
+        (update.quizType || quizType) !== "Q&A";
 
       return isValidQuestion && isValidOptions && isValidRightAnswer;
     };
@@ -126,35 +131,35 @@ const QuizQuestionsModal = ({
         type: quizType,
       };
 
-      if(updateQuiz){
-        const data = await getQuizByIdForUpdate(quizData, update._id)
-        if (data) {
+      if (updateQuiz) {
+        const response = await getQuizByIdForUpdate(update._id, quizData);
+        if (response) {
           setCreatedQuiz(true);
           setQuizShareLink(
-            `${window.location.origin}/sharedQuiz/${data.createdBy}`
+            `${window.location.origin}/sharedQuiz/${response.id}`
           );
-          setQuiz_id(data.quiz_id);
-          console.log(data, quizShareLink);
+          setQuiz_id(response.id);
+          console.log(response, quizShareLink);
         } else {
           console.error("No data returned from API.");
         }
-      }else {
+      } else {
         try {
           // console.log(quizData);
-          const data = await createQuiz(quizData);
-          if (data) {
+          const response = await createQuiz(quizData);
+          if (response) {
             setCreatedQuiz(true);
             setQuizShareLink(
-              `${window.location.origin}/sharedQuiz/${quizData.createdBy}`
+              `${window.location.origin}/sharedQuiz/${response.id}`
             );
-            setQuiz_id(data.quiz_id);
-            console.log(data, quizShareLink);
+            setQuiz_id(response.id);
+            console.log(response, quizShareLink);
           } else {
             console.error("No data returned from API.");
           }
         } catch (error) {
           console.error("Error creating quiz:", error.message);
-          setCreatedQuiz(false); // Reset createdQuiz state if there's an error
+          setCreatedQuiz(false);
         }
       }
     } else {

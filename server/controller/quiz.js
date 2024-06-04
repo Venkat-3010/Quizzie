@@ -22,7 +22,7 @@ const createQuiz = async (req, res) => {
     res.status(201).json({
       success: true,
       message: `${title} created successfully`,
-      quiz_id: newQuiz._id,
+      id: newQuiz._id,
       newQuiz,
     });
   } catch (error) {
@@ -59,6 +59,8 @@ const getAllQuizzesByUser = async (req, res) => {
       sortedImpressions: sortedImpressions,
       sortedByDate: sortedByDate,
       trendQuiz: trendQuiz,
+      impressions: quiz.impressions,
+      id,
     });
   } catch (error) {
     console.log("error getting quizzes", error);
@@ -70,9 +72,11 @@ const getAllQuizzesByUser = async (req, res) => {
 };
 
 const QuizAnalysis = async (req, res) => {
-  const { id } = req.params;
   try {
-    const quiz = await Quiz.findOne({ createdAt: req.user, _id: id });
+    const { quiz_id } = req.params;
+    const { id } = req.params;
+    console.log(quiz_id);
+    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: id });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
@@ -103,6 +107,7 @@ const getQuizById = async (req, res) => {
       });
     }
     quiz.impressions += 1;
+    await quiz.save();
 
     let newQuiz = quiz.toObject();
 
@@ -114,6 +119,7 @@ const getQuizById = async (req, res) => {
       success: true,
       quiz: newQuiz,
       message: "fetching data successful",
+      impressions: quiz.impressions,
     });
   } catch (error) {
     console.log("error getting quiz", error);
@@ -125,10 +131,10 @@ const getQuizById = async (req, res) => {
 
 const deleteQuiz = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const { quiz_id } = req.params;
     console.log(quiz_id);
-    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: id});
+    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: id });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
@@ -150,27 +156,35 @@ const deleteQuiz = async (req, res) => {
 };
 
 const checkQuizAnswers = async (req, res) => {
-  const { quiz_id } = req.body;
+  const { id } = req.params;
 
   try {
-    const quiz = await Quiz.findById(quiz_id);
+    const quiz = await Quiz.findOne({ _id: id });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
       });
     }
 
-    const { answers, questions } = req.body;
+    const { answers } = req.body;
     let score = 0;
     quiz.questions.forEach((question, index) => {
-      if (question.rightAnswer === answers[index]) {
+      const indexId = question.id;
+      if (question.rightAnswer === answers[indexId]) {
         question.correctAnswerCount += 1;
         score += 1;
       } else {
         question.wrongAnswerCount += 1;
       }
-      question.totalParticipants += 1;
     });
+
+    quiz.totalParticipants = new Map(); // Initialize the totalParticipants map
+    if (answers) {
+      quiz.totalParticipants.set(
+        answers,
+        (quiz.totalParticipants.get(answers) || 0) + 1
+      );
+    }
 
     await quiz.save();
     res.status(200).json({
@@ -189,7 +203,7 @@ const checkQuizAnswers = async (req, res) => {
 
 const getQuizByIdForUpdate = async (req, res) => {
   const { quiz_id } = req.params;
-  const { timer, questions, title } = req.body;
+  const { type, questions, title, timer } = req.body;
   try {
     const quiz = await Quiz.findById(quiz_id);
     if (!quiz) {
@@ -200,11 +214,13 @@ const getQuizByIdForUpdate = async (req, res) => {
     quiz.questions = questions;
     quiz.title = title;
     quiz.timer = timer;
+    quiz.type = type;
     const updateQuiz = await quiz.save();
     res.status(200).json({
       success: true,
       message: "Quiz updated successfully",
       updateQuiz,
+      id: updateQuiz._id,
     });
   } catch (error) {
     console.log("error getting quiz", error);

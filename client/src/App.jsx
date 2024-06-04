@@ -6,6 +6,7 @@ import { QuizzieContextValues } from './quizzie_context/UseQuzzieContext';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import ProtectedRoute from './utils/ProtectedRoute';
+import PlayModal from './components/ModalComponents/PlayModal/PlayModal';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginSignupPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/sharedQuiz/:id" element={<PlayModal />}/>  
       </Routes>
     </BrowserRouter>
   )

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./CreateQuizModal.module.css";
 import QuizQuestionsModal from "../QuizQuestionsModal/QuizQuestionsModal";
+import { useNavigate } from "react-router-dom";
 
 const CreateQuizModal = ({
   onClose,
@@ -16,7 +17,7 @@ const CreateQuizModal = ({
     title: quizTitle,
     quizType: quizType,
   });
-
+  const navigate = useNavigate()
   const [warning, setWarning] = useState(false);
   const [showCreateQuestion, setShowCreateQuestion] = useState(false);
 
@@ -37,6 +38,7 @@ const CreateQuizModal = ({
 
   const handleClose = () => {
     setShowCreateQuestion(false);
+    navigate('/home')
   }
 
   return (

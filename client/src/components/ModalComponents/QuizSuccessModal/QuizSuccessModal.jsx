@@ -2,6 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
 import styles from "./QuizSuccessModal.module.css";
+import { useNavigate } from "react-router-dom";
 
 const QuizSuccessModal = ({quizShareLink, onClose}) => {
   const handleLinkShare = async () => {
@@ -14,6 +15,10 @@ const QuizSuccessModal = ({quizShareLink, onClose}) => {
       toast.error("Failed to copy text: ", error);
     }
   };
+
+  const handleCancel = () => {
+    onClose();
+  }
 
   return (
     <div className={styles.modalContainer}>
@@ -28,7 +33,7 @@ const QuizSuccessModal = ({quizShareLink, onClose}) => {
       <button className={styles.shareBtn} onClick={handleLinkShare}>
         Share
       </button>
-      <RxCross2 className={styles.cancelBtn} onClick={onClose}/>
+      <RxCross2 className={styles.cancelBtn} onClick={handleCancel}/>
     </div>
   );
 };

@@ -74,8 +74,9 @@ const questionSchema = new Schema({
     },
   },
   totalParticipants: {
-    type: Number,
-    default: 0,
+    type: Map,
+    of: Number,
+    default: {},
   },
   wrongAnswerCount: {
     type: Number,

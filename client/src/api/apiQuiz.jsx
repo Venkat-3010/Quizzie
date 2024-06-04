@@ -32,18 +32,14 @@ const getAllUserQuizzes = async (userId) => {
   }
 };
 
-const quizAnalysis = async (quiz_Id) => {
+const quizAnalysis = async (quiz_id, id) => {
   try {
-    const response = await axios.get(`${quizUrl}/quizzes/${quiz_Id}/analysis`, {
-      headers: {
-        'Authorization': localStorage.getItem('token')
-      },
-    });
+    const response = await axios.get(`${quizUrl}/quizzes/${quiz_id}/${id}/analysis`);
     console.log(response.data);
-    return response.data;
+    return response.data.quiz;
   } catch (error) {
-    console.log("error updating quiz", error);
-    toast.warn("Error updating quiz", error.message);
+    console.log("error getting quiz Analysis", error);
+    toast.warn("error getting quiz Analysis", error.message);
   }
 };
 
@@ -73,11 +69,10 @@ const deleteQuiz = async (quiz_id, id) => {
   }
 };
 
-const checkQuizAnswers = async (answers) => {
+const checkQuizAnswers = async (id, answers) => {
   try {
     const response = await axios.patch(
-      `${quizUrl}/quizzes/submit`,
-      answers
+      `${quizUrl}/quizzes/submit/${id}`, answers
     );
     console.log(response.data);
     return response.data;

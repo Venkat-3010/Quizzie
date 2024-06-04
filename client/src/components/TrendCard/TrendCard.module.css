@@ -1,50 +1,48 @@
 .TrendCardContainer {
-  display: flex;
-  height: 25rem;
-  width: 100%;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  overflow-y: auto;
+  left: 30rem;
+  height: 50vh;
+  width: 80vw;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  /* grid-auto-rows: minmax(2rem, auto);  */
+  /* align-content: flex-start; */
+  /* overflow-y: auto */
 }
 
 .TrendCard {
-  width: 11rem;
-  height: 4.5rem;
+  max-width: 205px;
+  width: 100%;
+  height: 6rem;
   background-color: white;
-  margin-right: 2rem;
-  margin-left: 5px;
-  margin-top: 5px;
-  margin-bottom: 1.6rem;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  padding: 0px 6px;
+  align-items: flex-start;
+  gap: 25px;
+  padding: 10px;
   border-radius: 10px;
 }
 
-.TrendCardName{
-    display: flex;
-    justify-content: space-between;
-}
-
 .createdAt{
-    color: var(--green-color);
-    font-family: var(--font1);
+    color: #60B84B;
     font-weight: 600;
-    font-size: 0.7rem;
+    font-size: 13px;
 }
 
-.TrendCardImpressions{
+.TrendCardInfo{
     display: flex;
+    color: #FF5D01;
+    gap: 2rem;
     align-items: center;
     justify-content: space-between;
-    width: 3rem;
 }
 
 .TrendCardTitle{
-    font-family: var(--font1);
     font-weight: 600;
-    font-size: 1.4rem;
-    color: var(--heading-color);
+    font-size: 17px;
+    color: #1E1E1E;
+}
+
+.TrendCardInfo span{
+  gap: 0
 }
