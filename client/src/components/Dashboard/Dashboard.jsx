@@ -1,39 +1,42 @@
-import QuizCard from '../QuizCard/QuizCard'
-import TrendCard from '../TrendCard/TrendCard'
-import { useEffect, useState } from 'react';
-import styles from './Dashboard.module.css'
-import { getAllUserQuizzes } from '../../api/apiQuiz';
+import QuizCard from "../QuizCard/QuizCard";
+import TrendCard from "../TrendCard/TrendCard";
+import { useEffect, useState } from "react";
+import styles from "./Dashboard.module.css";
+import { getAllUserQuizzes } from "../../api/apiQuiz";
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({
-    totalQuizzes: [],
-    totalQuestions: 0,
-    totalImpressions: 0,
-  });
+  const [totalQuizzes, setTotalQuizzes] = useState([]);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [totalImpressions, setTotalImpressions] = useState(0);
   const [trend, setTrend] = useState([]);
-  const id = localStorage.getItem('id');
+  const userId = localStorage.getItem("id");
 
   useEffect(() => {
-    if (id) {
+    if (userId) {
       fetchQuizzes();
     }
-  }, [id]);
+  }, [userId]);
 
   const fetchQuizzes = async () => {
     try {
-      const response = await getAllUserQuizzes();
-      const data = await response.json();
+      const data = await getAllUserQuizzes(userId);
       const trendQuiz = data.trendQuiz || [];
       const sortedQuiz = data.sortedImpressions || [];
 
-      const totalQuestions = sortedQuiz.reduce((total, quiz) => total + quiz.questions.length, 0);
-      const totalImpressions = sortedQuiz.reduce((total, quiz) => total + quiz.impressions, 0);
+      const totQuestions = sortedQuiz.reduce(
+        (total, quiz) => total + quiz.questions.length,
+        0
+      );
+      const totImpressions = sortedQuiz.reduce(
+        (total, quiz) => total + quiz.impressions,
+        0
+      );
+      
+      // console.log(data)
 
-      setStats({
-        totalQuizzes: sortedQuiz,
-        totalQuestions: totalQuestions,
-        totalImpressions: totalImpressions,
-      });
+      setTotalQuizzes(sortedQuiz);
+      setTotalQuestions(totQuestions);
+      setTotalImpressions(totImpressions);
 
       setTrend(trendQuiz);
     } catch (error) {
@@ -45,28 +48,29 @@ const Dashboard = () => {
     {
       text1: "Quiz",
       text2: "Created",
-      value: stats.totalQuizzes.length,
+      value: totalQuizzes.length,
       color: "#FF5D01",
     },
     {
       text1: "Questions",
       text2: "Created",
-      value: stats.totalQuestions,
+      value: totalQuestions,
       color: "#60B84B",
     },
     {
       text1: "Total",
       text2: "Impressions",
-      value: stats.totalImpressions >= 1000
-        ? (stats.totalImpressions / 1000).toFixed(1) + " K"
-        : stats.totalImpressions,
+      value:
+        totalImpressions >= 1000
+          ? (totalImpressions / 1000).toFixed(1) + " K"
+          : totalImpressions,
       color: "#5076FF",
     },
   ];
 
   return (
     <div className={styles.dashboardContainer}>
-      <QuizCard quizTotalItems={quizTotalItems} /> 
+      <QuizCard quizTotalItems={quizTotalItems} />
       <div className={styles.box}>
         <b>Trending Quizzes</b>
         <TrendCard trend={trend} />

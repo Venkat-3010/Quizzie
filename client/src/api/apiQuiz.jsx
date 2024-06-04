@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-const quizUrl = "https://quizzie-33a2.onrender.com/quizapi";
+const quizUrl = "http://localhost:4000/quizapi";
 
 const createQuiz = async (quizData) => {
   try {
@@ -17,9 +17,9 @@ const createQuiz = async (quizData) => {
   }
 };
 
-const getAllUserQuizzes = async () => {
+const getAllUserQuizzes = async (userId) => {
   try {
-    const response = await axios.get(`${quizUrl}/user-quizzes`, {
+    const response = await axios.get(`${quizUrl}/user-quizzes/${userId}`,{
       headers: {
         'Authorization': localStorage.getItem('token')
       },
@@ -32,9 +32,9 @@ const getAllUserQuizzes = async () => {
   }
 };
 
-const quizAnalysis = async (quizId) => {
+const quizAnalysis = async (quiz_Id) => {
   try {
-    const response = await axios.get(`${quizUrl}/quizzes/${quizId}/analysis`, {
+    const response = await axios.get(`${quizUrl}/quizzes/${quiz_Id}/analysis`, {
       headers: {
         'Authorization': localStorage.getItem('token')
       },
@@ -47,9 +47,9 @@ const quizAnalysis = async (quizId) => {
   }
 };
 
-const getQuizById = async (quizId) => {
+const getQuizById = async (quiz_Id) => {
   try {
-    const response = await axios.get(`${quizUrl}/quizzes/${quizId}`);
+    const response = await axios.get(`${quizUrl}/quizzes/${quiz_Id}`);
     console.log("response", response.data);
     return response.data;
   } catch (error) {
@@ -58,9 +58,9 @@ const getQuizById = async (quizId) => {
   }
 };
 
-const deleteQuiz = async (quizId) => {
+const deleteQuiz = async (user) => {
   try {
-    const response = await axios.delete(`${quizUrl}/quizzes/${quizId}/delete`, {
+    const response = await axios.delete(`${quizUrl}/quizzes/${user}/delete`, {
       headers: {
         'Authorization': localStorage.getItem('token')
       },
@@ -73,10 +73,10 @@ const deleteQuiz = async (quizId) => {
   }
 };
 
-const checkQuizAnswers = async (id, answers) => {
+const checkQuizAnswers = async (answers) => {
   try {
     const response = await axios.patch(
-      `${quizUrl}/quizzes/${id}/submit`,
+      `${quizUrl}/quizzes/submit`,
       answers
     );
     console.log(response.data);
@@ -87,10 +87,10 @@ const checkQuizAnswers = async (id, answers) => {
   }
 };
 
-const getQuizByIdForUpdate = async (quizId, quizData) => {
+const getQuizByIdForUpdate = async (quiz_Id, quizData) => {
   try {
     const response = await axios.patch(
-      `${quizUrl}/quizzes/${quizId}/update`,
+      `${quizUrl}/quizzes/${quiz_Id}/update`,
       quizData,
       {
         headers: {
