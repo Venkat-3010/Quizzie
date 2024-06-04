@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import {  getAllUserQuizzes } from "../../api/apiQuiz";
+import React, { useState, useEffect } from "react";
+import { deleteQuiz, getAllUserQuizzes } from "../../api/apiQuiz"; // Removed deleteQuiz import here
 import styles from "./Analytics.module.css";
 import { toast } from "react-toastify";
 import DeleteQuizModal from "../ModalComponents/DeleteQuizModal/DeleteQuizModal";
@@ -7,28 +7,30 @@ import CreateQuizModal from "../ModalComponents/CreateQuizModal/CreateQuizModal"
 import { Link } from "react-router-dom";
 import shareIcon from '../../assets/share.svg';
 import deleteIcon from '../../assets/material-symbols_delete.png';
-import editIcon from '../../assets/edit.svg'
+import editIcon from '../../assets/edit.svg';
 
 const Analytics = () => {
   const userId = localStorage.getItem("id");
   const [quizzes, setQuizzes] = useState([]);
-  const [removeQuiz, setRemoveQuiz] = useState(false);
-  const [quizIdIndex, setQuizIdIndex] = useState("");
-  const [updateQuiz, setUpdateQuiz] = useState('');
-  const [updateModal, setUpdateModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [quizId, setQuizId] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editQuizId, setEditQuizId] = useState("");
 
   const fetchQuizzes = async (userId) => {
     try {
       const data = await getAllUserQuizzes(userId);
       const sortedByDate = data.sortedByDate || [];
       setQuizzes(sortedByDate);
+      // console.log(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Failed to fetch quizzes");
     }
   };
 
   const shareLink = async (event) => {
-    let url = `${window.location.origin}/sharedQuiz/${event.target.id}`;
+    const url = `${window.location.origin}/sharedQuiz/${event.target.id}`;
     try {
       await navigator.clipboard.writeText(url);
       toast.success("Link copied to clipboard", {
@@ -36,7 +38,7 @@ const Analytics = () => {
         position: "bottom-right",
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Failed to copy link to clipboard", {
         theme: "dark",
         position: "bottom-right",
@@ -44,15 +46,19 @@ const Analytics = () => {
     }
   };
 
-  const handleQuizEdit = (event) => {
-    setUpdateQuiz(event.target.id)
-    setUpdateModal(true)
-  }
+  const handleQuizEdit = (e) => {
+    setEditQuizId(e.target.id);
+    setShowEditModal(true);
+  };
 
-  const handleRemoveQuiz = async (event) => {
-    setRemoveQuiz(true);
-    setQuizIdIndex(event.target.id);
-    fetchQuizzes(userId);
+  const handleRemoveQuiz = (e) => {
+    setQuizId(e.target.id);
+    setShowDeleteModal(true);
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getDate()} ${date.toLocaleString("en-US", { month: "short" })}, ${date.getFullYear()}`;
   };
 
   useEffect(() => {
@@ -62,13 +68,13 @@ const Analytics = () => {
   }, [userId]);
 
   const onClose = () => {
-    setUpdateModal(false);
-    setRemoveQuiz(false);
-  }
+    setShowEditModal(false);
+    setShowDeleteModal(false);
+  };
 
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.AnalyticsContainer}>
+      <div className={styles.analyticsContainer}>
         <p className={styles.heading}>Quiz Analysis</p>
         <table className={styles.quizAnalyticsTable}>
           <thead className={styles.rowHeadingContainer}>
@@ -76,7 +82,7 @@ const Analytics = () => {
               <th>S.No</th>
               <th>Quiz Name</th>
               <th>Created On</th>
-              <th>Impression</th>
+              <th>Impressions</th>
               <th></th>
               <th></th>
             </tr>
@@ -86,15 +92,7 @@ const Analytics = () => {
               <tr className={styles.resultRow} key={quiz._id} id={quiz._id}>
                 <td>{index + 1}</td>
                 <td>{quiz.title}</td>
-                <td>
-                  {new Date(quiz.createdAt).getDate() +
-                    " " +
-                    new Date(quiz.createdAt).toLocaleString("en-US", {
-                      month: "short",
-                    }) +
-                    ", " +
-                    new Date(quiz.createdAt).getFullYear()}
-                </td>
+                <td>{formatDate(quiz.createdAt)}</td>
                 <td>
                   {quiz.impressions < 1000
                     ? quiz.impressions
@@ -106,27 +104,27 @@ const Analytics = () => {
                     className={styles.editIcon}
                     src={editIcon}
                     alt="edit quiz"
-                    onClick={(event) => handleQuizEdit(event)}
+                    onClick={handleQuizEdit}
                   />
                   <img
                     id={quiz._id}
                     className={styles.deleteIcon}
                     src={deleteIcon}
                     alt="delete quiz"
-                    onClick={(event) => handleRemoveQuiz(event)}
+                    onClick={handleRemoveQuiz}
                   />
                   <img
                     id={quiz._id}
                     className={styles.shareIcon}
                     src={shareIcon}
                     alt="share quiz"
-                    onClick={(event) => shareLink(event)}
+                    onClick={shareLink}
                   />
                 </td>
                 <td>
                   <Link
                     to={`/analytics/${quiz._id}`}
-                    className={styles.AnalysisLink}
+                    className={styles.analysisLink}
                   >
                     Question Wise Analysis
                   </Link>
@@ -136,12 +134,12 @@ const Analytics = () => {
           </tbody>
         </table>
       </div>
-      {removeQuiz && (
-        <DeleteQuizModal quiz_Id={quizIdIndex} setRemoveQuiz={setRemoveQuiz} />
+      {showDeleteModal && (
+        <DeleteQuizModal quizId={quizId} setShowDeleteModal={setShowDeleteModal} />
       )}
-      {updateModal && (
+      {showEditModal && (
         <div className={styles.updateQuizContainer}>
-          <CreateQuizModal updateQuiz={updateQuiz} onClose={onClose}/>
+          <CreateQuizModal quizId={editQuizId} onClose={onClose} />
         </div>
       )}
     </div>

@@ -1,41 +1,44 @@
-import React from 'react';
-import styles from './DeleteQuizModal.module.css'
-import { toast } from 'react-toastify';
-import { deleteQuiz } from '../../../api/apiQuiz';
+import React from "react";
+import styles from "./DeleteQuizModal.module.css";
+import { toast } from "react-toastify";
+import { deleteQuiz } from "../../../api/apiQuiz";
 
-const DeleteQuizModal = ({setRemoveQuiz, quiz_id}) => {
-
-  const userId = localStorage.getItem('id');
-
-  const handleDeleteQuiz = async() => {
+const DeleteQuizModal = ({ setShowDeleteModal, quizId }) => {
+  const id = localStorage.getItem("id");
+  const handleDeleteQuiz = async () => {
     try {
-        const data  = await deleteQuiz(quiz_id, userId);
-        toast.success("Quiz removed successfully", data.message);
-        setRemoveQuiz(false);
-      } catch (error) {
-        console.log(error);
+      const data = await deleteQuiz(quizId, id);
+      if (data) {
+        toast.success("Quiz removed successfully", {
+          theme: "dark",
+          position: "bottom-right",
+        });
+        setShowDeleteModal(false);
       }
-  }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleCancel = () => {
-    setRemoveQuiz(false);
-  }
+    setShowDeleteModal(false);
+  };
 
   return (
-    <div className={styles.container}>
-            <div className={styles.popupCard}>
-                <p className={styles.text}>Are you confirm you want to delete ?</p>
-                <div className={styles.buttonsContainer}>
-                    <button className={styles.deleteBtn} onClick={handleDeleteQuiz}>
-                        Confirm Delete
-                    </button>
-                    <button className={styles.cancelBtn} onClick={handleCancel}>
-                        Cancel
-                    </button>
-                </div>
-            </div>
+    <div className={styles.modalContainer}>
+      <div className={styles.modalCard}>
+        <p className={styles.modalText}>Are you confirm you want to delete ?</p>
+        <div className={styles.btnContainer}>
+          <button className={styles.deleteBtn} onClick={handleDeleteQuiz}>
+            Confirm Delete
+          </button>
+          <button className={styles.cancelBtn} onClick={handleCancel}>
+            Cancel
+          </button>
         </div>
-  )
-}
+      </div>
+    </div>
+  );
+};
 
-export default DeleteQuizModal
+export default DeleteQuizModal;

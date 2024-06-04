@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-const quizUrl = "http://localhost:4000/quizapi";
+const quizUrl = "https://quizzie-33a2.onrender.com/quizapi";
 
 const createQuiz = async (quizData) => {
   try {
@@ -58,9 +58,9 @@ const getQuizById = async (quiz_Id) => {
   }
 };
 
-const deleteQuiz = async (quiz_id, userId) => {
+const deleteQuiz = async (quiz_id, id) => {
   try {
-    const response = await axios.delete(`${quizUrl}/${quiz_id}/delete`, userId, {
+    const response = await axios.delete(`${quizUrl}/quizzes/${quiz_id}/${id}/delete`, {
       headers: {
         'Authorization': localStorage.getItem('token')
       },
