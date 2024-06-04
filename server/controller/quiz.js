@@ -125,9 +125,9 @@ const getQuizById = async (req, res) => {
 
 const deleteQuiz = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { quiz_id } = req.params;
-    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: req.user.id });
+    const { userId } = req.body;
+    const  quiz_id  = req.params.id;
+    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: userId });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",

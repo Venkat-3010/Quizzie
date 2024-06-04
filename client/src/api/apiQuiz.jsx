@@ -58,9 +58,9 @@ const getQuizById = async (quiz_Id) => {
   }
 };
 
-const deleteQuiz = async (user) => {
+const deleteQuiz = async (quiz_id, userId) => {
   try {
-    const response = await axios.delete(`${quizUrl}/quizzes/${user}/delete`, {
+    const response = await axios.delete(`${quizUrl}/${quiz_id}/delete`, userId, {
       headers: {
         'Authorization': localStorage.getItem('token')
       },

@@ -60,7 +60,7 @@
     padding: 0 25px;
 }
 
-img{
+.logoutBtn img{
     height: 1px;
     align-self: stretch;
     max-width: 100%;
