@@ -1,10 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./QuizQuestionsModal.module.css";
-import {
-  createQuiz,
-  getQuizById,
-  getQuizByIdForUpdate,
-} from "../../../api/apiQuiz";
+import { createQuiz } from "../../../api/apiQuiz";
 import { v4 as uuidv4 } from "uuid";
 import QuizTimer from "../QuizTimer/QuizTimer";
 import QuizSuccessModal from "../QuizSuccessModal/QuizSuccessModal";
@@ -13,14 +9,13 @@ import QuestionInput from "../QuestionInput/QuestionInput";
 import OptionList from "../OptionList/OptionList";
 import ControlButtons from "../ControlButtons/ControlButtons";
 import { QuizzieContext } from "../../../App";
+import { toast } from "react-toastify";
 
 const QuizQuestionsModal = ({
   onClose,
   quizTitle,
   quizType,
-  quiz_id,
   setQuiz_id,
-  updateQuiz,
 }) => {
   const initialQuestion = {
     id: "initial",
@@ -33,29 +28,6 @@ const QuizQuestionsModal = ({
     rightAnswer: "",
   };
 
-  const userId = localStorage.getItem("id");
-  const [update, setUpdate] = useState("");
-
-  useEffect(() => {
-    if (updateQuiz) {
-      (async () => {
-        try {
-          const response = await getQuizById(userId);
-          setUpdate(response.data.quiz);
-        } catch (error) {
-          console.log(error);
-        }
-      })();
-    }
-  }, [updateQuiz]);
-
-  useEffect(() => {
-    if (update) {
-      setQuizQuestions(update.Questions);
-      setTimer(update.timer);
-      setQuestionIndex(update.questions[0].id);
-    }
-  }, [update]);
   const { quizShareLink, setQuizShareLink } = useContext(QuizzieContext);
   const [quizQuestions, setQuizQuestions] = useState([initialQuestion]);
   const [timer, setTimer] = useState("OFF");
@@ -112,54 +84,43 @@ const QuizQuestionsModal = ({
         question.options
       );
       const isValidRightAnswer =
-        question.rightAnswer.length > 0 ||
-        (update.quizType || quizType) !== "Q&A";
+        question.rightAnswer.length > 0 || quizType !== "Q&A";
 
       return isValidQuestion && isValidOptions && isValidRightAnswer;
     };
 
     const isValid = quizQuestions.every(validateQuestion);
     const createdBy = localStorage.getItem("id");
-    // console.log(createdBy)
 
     if (isValid) {
       const quizData = {
-        title: update.quizTitle || quizTitle,
-        questions: update.quizQuestions || quizQuestions,
+        title: quizTitle,
+        questions: quizQuestions,
         timer: timer,
         createdBy,
         type: quizType,
       };
 
-      if (updateQuiz) {
-        const response = await getQuizByIdForUpdate(update._id, quizData);
+      try {
+        const response = await createQuiz(quizData);
         if (response) {
           setCreatedQuiz(true);
           setQuizShareLink(
             `${window.location.origin}/sharedQuiz/${response.id}`
           );
           setQuiz_id(response.id);
-          console.log(response, quizShareLink);
         } else {
           console.error("No data returned from API.");
+          toast.error("An error occurred while creating the quiz");
         }
-      } else {
-        try {
-          // console.log(quizData);
-          const response = await createQuiz(quizData);
-          if (response) {
-            setCreatedQuiz(true);
-            setQuizShareLink(
-              `${window.location.origin}/sharedQuiz/${response.id}`
-            );
-            setQuiz_id(response.id);
-            console.log(response, quizShareLink);
-          } else {
-            console.error("No data returned from API.");
-          }
-        } catch (error) {
-          console.error("Error creating quiz:", error.message);
-          setCreatedQuiz(false);
+      } catch (error) {
+        console.error(`An error occurred while creating the quiz:`, error.message);
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.message || "Server error");
+        } else if (error.request) {
+          toast.error("Network error");
+        } else {
+          toast.error("An unexpected error occured");
         }
       }
     } else {
@@ -238,14 +199,13 @@ const QuizQuestionsModal = ({
               }}
               quizType={quizType}
             />
-            {(update.quizType || quizType === "Q&A") && (
+            {quizType === "Q&A" && (
               <QuizTimer timer={timer} setTimer={setTimer} />
             )}
           </div>
           <ControlButtons
             onClose={onClose}
             handleCreateQuiz={handleCreateQuiz}
-            updateQuiz={updateQuiz}
           />
         </div>
       ) : (

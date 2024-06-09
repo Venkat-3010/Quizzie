@@ -25,11 +25,11 @@
     cursor: pointer;
 }
 
-.selected{
-    background-color: "#60B84B";
-    color: "#fff";
+.selected:focus{
+    background-color: #60B84B;
+    color: #fff;
 }
 
 .selected-option{
-    border: "2px solid #60B84B"
+    border: 2px solid #60B84B
 }

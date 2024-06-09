@@ -23,6 +23,12 @@ const QuestionInput = ({
     setQuizQuestions(updatedQuestions);
   };
 
+  const currentQuestion = quizQuestions.find(question => question.id === questionIndex) || {};
+
+  if (!currentQuestion || !currentQuestion.options || !currentQuestion.optionsType) {
+    return <div>Loading question data...</div>; 
+  }
+
   return (
     <>
       <label style={{ position: "relative" }}>
@@ -31,7 +37,7 @@ const QuestionInput = ({
           className={styles.question}
           placeholder={quizType === "Q&A" ? "Q&A Question" : "Poll Question"}
           value={
-            quizQuestions.find((q) => q.id === questionIndex)?.question || ""
+            currentQuestion.question || ""
           }
           onChange={(event) => handleInputChange(event, "question")}
         />
@@ -44,7 +50,7 @@ const QuestionInput = ({
             value="text"
             onChange={handleOptionTypeChange}
             checked={
-              quizQuestions.find((q) => q.id === questionIndex)?.optionsType ===
+              currentQuestion?.optionsType ===
               "text"
             }
             name="questionOptionType"
@@ -58,7 +64,7 @@ const QuestionInput = ({
             value="imageURL"
             onChange={handleOptionTypeChange}
             checked={
-              quizQuestions.find((q) => q.id === questionIndex)?.optionsType ===
+              currentQuestion?.optionsType ===
               "imageURL"
             }
             name="questionOptionType"
@@ -72,8 +78,7 @@ const QuestionInput = ({
             value="textAndImageURL"
             onChange={handleOptionTypeChange}
             checked={
-              quizQuestions.find((q) => q.id === questionIndex)
-                ?.optionsType === "textAndImageURL"
+              currentQuestion?.optionsType === "textAndImageURL"
             }
             name="questionOptionType"
             id="textAndImageURL"

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { deleteQuiz, getAllUserQuizzes, quizAnalysis } from "../../api/apiQuiz"; // Removed deleteQuiz import here
+import { getAllUserQuizzes } from "../../api/apiQuiz"; 
 import styles from "./Analytics.module.css";
 import { toast } from "react-toastify";
 import DeleteQuizModal from "../ModalComponents/DeleteQuizModal/DeleteQuizModal";
-import CreateQuizModal from "../ModalComponents/CreateQuizModal/CreateQuizModal";
 import { Link } from "react-router-dom";
 import shareIcon from "../../assets/share.svg";
 import deleteIcon from "../../assets/material-symbols_delete.png";
 import editIcon from "../../assets/edit.svg";
 import QuizAnalysis from "../QuizAnalysis/QuizAnalysis";
+import UpdateQuizModal from "../ModalComponents/UpdateQuizModal/UpdateQuizModal";
 
 const Analytics = () => {
   const userId = localStorage.getItem("id");
@@ -25,7 +25,7 @@ const Analytics = () => {
       const data = await getAllUserQuizzes(userId);
       const sortedByDate = data.sortedByDate || [];
       setQuizzes(sortedByDate);
-      // console.log(data);
+      console.log(data);
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch quizzes");
@@ -51,11 +51,13 @@ const Analytics = () => {
 
   const handleQuizEdit = (e) => {
     setEditQuizId(e.target.id);
+    console.log(e.target.id);
     setShowEditModal(true);
   };
 
   const handleRemoveQuiz = (e) => {
     setQuizId(e.target.id);
+    console.log(e.target.id)
     setShowDeleteModal(true);
   };
 
@@ -87,7 +89,7 @@ const Analytics = () => {
   return (
     <>
       {quizAnalysis ? (
-        <QuizAnalysis quizType={currentQuizType} quiz_Id={quizId} />
+        <QuizAnalysis quizType={currentQuizType} quiz_id={quizId} />
       ) : (
         <div className={styles.pageContainer}>
           <div className={styles.analyticsContainer}>
@@ -157,7 +159,7 @@ const Analytics = () => {
           )}
           {showEditModal && (
             <div className={styles.updateQuizContainer}>
-              <CreateQuizModal quizId={editQuizId} onClose={onClose} />
+              <UpdateQuizModal updateQuiz={editQuizId} onClose={onClose} />
             </div>
           )}
         </div>

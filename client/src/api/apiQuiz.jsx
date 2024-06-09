@@ -6,7 +6,7 @@ const createQuiz = async (quizData) => {
   try {
     const response = await axios.post(`${quizUrl}/createquiz`, quizData, {
       headers: {
-        'Authorization': localStorage.getItem('token')
+        'Authorization': localStorage.getItem("token")
       },
     });
     console.log(response.data);
@@ -21,10 +21,10 @@ const getAllUserQuizzes = async (userId) => {
   try {
     const response = await axios.get(`${quizUrl}/user-quizzes/${userId}`,{
       headers: {
-        'Authorization': localStorage.getItem('token')
+        'Authorization': localStorage.getItem("token")
       },
     });
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error getting user quizzes", error);
@@ -32,11 +32,15 @@ const getAllUserQuizzes = async (userId) => {
   }
 };
 
-const quizAnalysis = async (quiz_id, id) => {
+const quizAnalysis = async (quiz_id) => {
   try {
-    const response = await axios.get(`${quizUrl}/quizzes/${quiz_id}/${id}/analysis`);
+    const response = await axios.get(`${quizUrl}/quizzes/${quiz_id}/analysis`, {
+      headers: {
+          'Authorization': localStorage.getItem("token")
+        }
+    });
     console.log(response.data);
-    return response.data.quiz;
+    return response.data;
   } catch (error) {
     console.log("error getting quiz Analysis", error);
     toast.warn("error getting quiz Analysis", error.message);
@@ -46,7 +50,7 @@ const quizAnalysis = async (quiz_id, id) => {
 const getQuizById = async (quiz_Id) => {
   try {
     const response = await axios.get(`${quizUrl}/quizzes/${quiz_Id}`);
-    console.log("response", response.data);
+    // console.log("response", response.data.quiz);
     return response.data;
   } catch (error) {
     console.log("error getting quiz by id", error);
@@ -54,11 +58,11 @@ const getQuizById = async (quiz_Id) => {
   }
 };
 
-const deleteQuiz = async (quiz_id, id) => {
+const deleteQuiz = async (quiz_id) => {
   try {
-    const response = await axios.delete(`${quizUrl}/quizzes/${quiz_id}/${id}/delete`, {
+    const response = await axios.delete(`${quizUrl}/quizzes/${quiz_id}/delete`, {
       headers: {
-        'Authorization': localStorage.getItem('token')
+        'Authorization': localStorage.getItem("token")
       },
     });
     console.log(response.data);
@@ -72,9 +76,8 @@ const deleteQuiz = async (quiz_id, id) => {
 const checkQuizAnswers = async (id, answers) => {
   try {
     const response = await axios.patch(
-      `${quizUrl}/quizzes/submit/${id}`, answers
+      `${quizUrl}/quizzes/submit/${id}`, { answers }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error checking quiz answers", error);
@@ -82,14 +85,14 @@ const checkQuizAnswers = async (id, answers) => {
   }
 };
 
-const getQuizByIdForUpdate = async (quiz_Id, quizData) => {
+const getQuizByIdForUpdate = async (quiz_id, quizData) => {
   try {
     const response = await axios.patch(
-      `${quizUrl}/quizzes/${quiz_Id}/update`,
+      `${quizUrl}/quizzes/${quiz_id}/update`,
       quizData,
       {
         headers: {
-          'Authorization': localStorage.getItem('token')
+          'Authorization': localStorage.getItem("token")
         },
       }
     );

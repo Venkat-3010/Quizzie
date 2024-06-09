@@ -14,7 +14,7 @@ const QuizzieContextValues = () => {
         isLoggedIn,
         setIsLoggedIn,
         quizShareLink,
-        setQuizShareLink,
+        setQuizShareLink
     }
 };
 

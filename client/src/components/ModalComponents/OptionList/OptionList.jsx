@@ -33,11 +33,17 @@ const OptionList = ({
     color: "#fff",
   };
 
+  const currentQuestion = quizQuestions.find(q => q.id === questionIndex) || {};
+
+  if (!currentQuestion || !currentQuestion.options || !currentQuestion.optionsType) {
+    return <div>Loading question data...</div>; 
+  }
+
   return (
     <div className={styles.optionAndTimer}>
       <div className={styles.optionsContainer}>
         {Object.keys(
-          quizQuestions.find((q) => q.id === questionIndex)?.options || {}
+          currentQuestion?.options
         ).map((option) => (
           <div key={option} className={styles.option}>
             {quizType === "Q&A" && (
@@ -67,9 +73,9 @@ const OptionList = ({
                 type="text"
                 className={styles.optionInput}
                 value={
-                  quizQuestions.find((q) => q.id === questionIndex)?.options[
+                  quizQuestions.find((q) => q.id === questionIndex).options[
                     option
-                  ].text || ""
+                  ].text
                 }
                 onChange={(e) => handleInputOptions(e, "text", option)}
                 placeholder="Text"
@@ -88,9 +94,9 @@ const OptionList = ({
                 type="text"
                 className={styles.optionInput}
                 value={
-                  quizQuestions.find((q) => q.id === questionIndex)?.options[
+                  quizQuestions.find((q) => q.id === questionIndex).options[
                     option
-                  ].imageUrl || ""
+                  ].imageUrl
                 }
                 onChange={(e) => handleInputOptions(e, "imageUrl", option)}
                 placeholder="Image URL"

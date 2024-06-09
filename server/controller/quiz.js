@@ -2,28 +2,52 @@ const Quiz = require("../models/quiz");
 const User = require("../models/user");
 
 const createQuiz = async (req, res) => {
-  const { title, questions, type, timer, createdBy } = req.body;
+  const { title, questions, type, timer } = req.body;
+  const createdBy = req.user._id;
 
-  // if (!title || !questions || !type) {
-  //   return res.status(400).json({
-  //     message: "All fields are required",
-  //   });
-  // }
+  if (!title || !questions || !type) {
+    return res.status(400).json({
+      message: "All fields are required",
+    });
+  }
 
   try {
     const newQuiz = await Quiz.create({
       title,
-      questions,
+      questions: questions.map((q) => {
+        console.log(q);
+        if (type === "Poll") {
+          const totalParticipants = {};
+          if (q.options) {
+            Object.keys(q.options).forEach((option) => {
+              totalParticipants[option] = 0;
+            });
+          }
+          console.log(totalParticipants);
+          return {
+            ...q,
+            totalParticipants,
+          };
+        } else if (type === "Q&A") {
+          return {
+            ...q,
+            totalParticipants: 0,
+          };
+        }
+        return q;
+      }),
       type,
       timer,
       createdBy,
     });
 
+    await newQuiz.save();
+
     res.status(201).json({
       success: true,
       message: `${title} created successfully`,
       id: newQuiz._id,
-      newQuiz,
+      quiz: newQuiz,
     });
   } catch (error) {
     console.log("error creating quiz", error);
@@ -35,31 +59,33 @@ const createQuiz = async (req, res) => {
 };
 
 const getAllQuizzesByUser = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user._id;
   try {
-    const quiz = await Quiz.find({ createdBy: id });
-    let sortQuiz = quiz.map((quiz) => {
+    const quizzes = await Quiz.find({ createdBy: id });
+    let sortedQuizzes = quizzes.map((quiz) => {
       let newQuiz = quiz.toObject();
-      newQuiz.questions.forEach((question) => {
-        delete question.rightAnswer;
-      });
       return newQuiz;
     });
 
-    let sortedImpressions = [...sortQuiz].sort(
+    sortedQuizzes.forEach((quiz) => {
+      quiz.questions.forEach((question) => {
+        delete question.rightAnswer;
+      });
+    });
+
+    let sortedImpressions = [...sortedQuizzes].sort(
       (a, b) => b.impressions - a.impressions
     );
-    let sortedByDate = [...sortQuiz].sort(
+    let sortedByDate = [...sortedQuizzes].sort(
       (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
     );
     let trendQuiz = sortedImpressions.filter((quiz) => quiz.impressions > 10);
     res.json({
       success: true,
-      quizTotal: sortQuiz.length,
-      sortedImpressions: sortedImpressions,
-      sortedByDate: sortedByDate,
+      quizTotal: sortedQuizzes.length,
+      sortedImpressions,
+      sortedByDate,
       trendQuiz: trendQuiz,
-      impressions: quiz.impressions,
       id,
     });
   } catch (error) {
@@ -74,9 +100,9 @@ const getAllQuizzesByUser = async (req, res) => {
 const QuizAnalysis = async (req, res) => {
   try {
     const { quiz_id } = req.params;
-    const { id } = req.params;
+    const userId = req.user._id;
     console.log(quiz_id);
-    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: id });
+    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: userId });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
@@ -117,7 +143,7 @@ const getQuizById = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      quiz: newQuiz,
+      quiz,
       message: "fetching data successful",
       impressions: quiz.impressions,
     });
@@ -130,11 +156,10 @@ const getQuizById = async (req, res) => {
 };
 
 const deleteQuiz = async (req, res) => {
+  const { quiz_id } = req.params;
+  const userId = req.user._id;
   try {
-    const { id } = req.params;
-    const { quiz_id } = req.params;
-    console.log(quiz_id);
-    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: id });
+    const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: userId });
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
@@ -156,37 +181,70 @@ const deleteQuiz = async (req, res) => {
 };
 
 const checkQuizAnswers = async (req, res) => {
-  const { id } = req.params;
+  let { id } = req.params;
 
   try {
-    const quiz = await Quiz.findOne({ _id: id });
+    let quiz = await Quiz.findById(id);
     if (!quiz) {
       return res.status(404).json({
         message: "Quiz not found",
       });
     }
 
-    const { answers } = req.body;
+    const {answers}  = req.body.answers;
     let score = 0;
-    quiz.questions.forEach((question, index) => {
-      const indexId = question.id;
-      if (question.rightAnswer === answers[indexId]) {
-        question.correctAnswerCount += 1;
-        score += 1;
-      } else {
-        question.wrongAnswerCount += 1;
-      }
-    });
+    const updatedQuestions = [];
 
-    quiz.totalParticipants = new Map(); // Initialize the totalParticipants map
-    if (answers) {
-      quiz.totalParticipants.set(
-        answers,
-        (quiz.totalParticipants.get(answers) || 0) + 1
+    quiz.questions.forEach((question) => {
+      const userAnswer = answers.find(
+        (ans) => ans._id.toString() === question._id.toString()
       );
-    }
 
-    await quiz.save();
+      if (quiz.type === "Q&A") {
+        const userAnswerKey = Object.keys(userAnswer.userAnswer)[0];
+        if (userAnswer && question.rightAnswer === userAnswerKey) {
+          question.correctAnswerCount += 1;
+          score += 1;
+        } else {
+          question.wrongAnswerCount += 1;
+        }
+        question.totalParticipants += 1;
+      } else if (quiz.type === "Poll") {
+        if (userAnswer) {
+          const userAnswerKey = Object.keys(userAnswer.userAnswer)[0];
+          if (question.options[0][userAnswerKey]) {
+            if (!question.totalParticipants[userAnswerKey]) {
+              question.totalParticipants[userAnswerKey] = 0;
+            }
+            question.totalParticipants[userAnswerKey] += 1;
+            console.log("totalParticipants", question.totalParticipants);
+          } else {
+            console.log(
+              "Selected option not found in question options:",
+              question.options
+            );
+          }
+        }
+      }
+      updatedQuestions.push(question);
+    });
+    const bulkOps = updatedQuestions.map((question) => ({
+      updateOne: {
+        filter: { "questions._id": question._id },
+        update: {
+          $set: {
+            "questions.$.totalParticipants": question.totalParticipants,
+            "questions.$.correctAnswerCount": question.correctAnswerCount,
+            "questions.$.wrongAnswerCount": question.wrongAnswerCount,
+          },
+        },
+      },
+    }));
+
+    await Quiz.bulkWrite(bulkOps);
+
+    quiz = await Quiz.findById(id);
+
     res.status(200).json({
       success: true,
       message: "Quiz answers checked successfully",
@@ -201,9 +259,18 @@ const checkQuizAnswers = async (req, res) => {
   }
 };
 
+
 const getQuizByIdForUpdate = async (req, res) => {
   const { quiz_id } = req.params;
   const { type, questions, title, timer } = req.body;
+  const userId = req.user._id;
+
+  if (!title || !questions || !type) {
+    return res.status(400).json({
+      message: "All fields are required",
+    });
+  }
+
   try {
     const quiz = await Quiz.findById(quiz_id);
     if (!quiz) {
@@ -211,15 +278,17 @@ const getQuizByIdForUpdate = async (req, res) => {
         message: "Quiz not found",
       });
     }
-    quiz.questions = questions;
+
     quiz.title = title;
-    quiz.timer = timer;
     quiz.type = type;
+    quiz.questions = questions;
+    quiz.timer = timer;
+
     const updateQuiz = await quiz.save();
     res.status(200).json({
       success: true,
       message: "Quiz updated successfully",
-      updateQuiz,
+      quiz: updateQuiz,
       id: updateQuiz._id,
     });
   } catch (error) {

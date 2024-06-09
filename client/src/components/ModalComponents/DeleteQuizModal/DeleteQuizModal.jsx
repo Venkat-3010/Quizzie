@@ -4,10 +4,9 @@ import { toast } from "react-toastify";
 import { deleteQuiz } from "../../../api/apiQuiz";
 
 const DeleteQuizModal = ({ setShowDeleteModal, quizId }) => {
-  const id = localStorage.getItem("id");
   const handleDeleteQuiz = async () => {
     try {
-      const data = await deleteQuiz(quizId, id);
+      const data = await deleteQuiz(quizId);
       if (data) {
         toast.success("Quiz removed successfully", {
           theme: "dark",

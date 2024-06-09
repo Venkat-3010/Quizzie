@@ -12,46 +12,56 @@ const PlayModal = () => {
   const [timer, setTimer] = useState(null);
   const [score, setScore] = useState(0);
   const { id } = useParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handlePlayQuiz = async () => {
-    try {
-      const response = await getQuizById(id);
-      setQuizzes(response.quiz);
-      setTimer(response.quiz.timer);
-      setAnswers(
-        response.quiz.questions.map((question) => ({
-          _id: question._id,
-          question: question.question,
-          userAnswer: "",
-        }))
-      );
-    } catch (error) {
-      console.error("Error fetching quiz:", error);
-      toast.warn(error.message, {
-        theme: "dark",
-        position: "bottom-right",
-      });
-    }
-  };
+  const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
-    handlePlayQuiz();
+    const fetchQuiz = async () => {
+      try {
+        const response = await getQuizById(id);
+        console.log(response);
+        const quiz = response.quiz;
+
+        const formattedOptions = quiz.questions.map((question) => ({
+          ...question,
+          options:  Object.keys(question.options[0]) 
+          .filter(key => question.options[0][key].text || question.options[0][key].imageURL) 
+          .map(key => ({ [key]: question.options[0][key] }))
+        }));
+        console.log(formattedOptions);
+
+        setQuizzes({ ...quiz, questions: formattedOptions  });
+        setTimer(response.quiz.timer);
+        setAnswers(
+          formattedOptions.map((question) => ({
+            _id: question._id,
+            userAnswer: "",
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching quiz:", error);
+        toast.warn(error.message, {
+          theme: "dark",
+          position: "bottom-right",
+        });
+      }
+    };
+    fetchQuiz();
   }, [id]);
 
   useEffect(() => {
+    let timerLeft;
     if (timer === 0) {
-      if (questionIndex < quizzes?.questions?.length - 1) {
+      if (questionIndex < quizzes.questions.length - 1) {
         setQuestionIndex(questionIndex + 1);
         setTimer(quizzes.timer);
       } else {
         submitQuestion();
       }
-    } else {
-      const timeLeft = setTimeout(() => setTimer(timer - 1), 1000);
-      return () => clearTimeout(timeLeft);
+    } else if (timer !== null) {
+      timerLeft = setTimeout(() => setTimer(timer - 1), 1000);
     }
-  }, [timer]);
+    return () => clearTimeout(timerLeft);
+  }, [timer, questionIndex, quizzes]);
 
   const nextQuestion = () => {
     if (questionIndex < quizzes.questions.length - 1) {
@@ -61,83 +71,83 @@ const PlayModal = () => {
   };
 
   const handleOptionClick = (option) => {
-    const newUserAnswers = [...answers];
-    newUserAnswers[questionIndex].userAnswer = option;
-    setAnswers(newUserAnswers);
+    setAnswers((prevAnswers) =>
+      prevAnswers.map((answer, index) =>
+        index === questionIndex ? { ...answer, userAnswer: option } : answer
+      )
+    );
   };
 
   const submitQuestion = async () => {
     try {
-      const formattedAnswers = answers.map((key) => ({
-        ...key,
-        userAnswer: key.userAnswer,
+      const formattedAnswers = answers.map((answer) => ({
+        ...answer,
+        userAnswer: answer.userAnswer,
       }));
+      console.log(formattedAnswers);
 
-      const response = await checkQuizAnswers(id, {
-        answers: formattedAnswers,
-      });
+      const response = await checkQuizAnswers(id, {answers : formattedAnswers});
       if (quizzes.quizType === "Poll") {
         toast.success("Thanks for participating in the poll!");
       } else {
+        console.log(response.score);
         setScore(`${response.score}/${quizzes.questions.length}`);
         toast.success("Thanks for participating in the quiz!");
       }
-      setIsSubmitting(true);
+      setShowResult(true);
     } catch (error) {
       console.error("Error submitting quiz answers:", error);
     }
   };
 
-  const renderOptions = () => {
-    return question.options.map((option, index) => {
-      let optionText, optionUrl;
-      if (question.optionType === "textAndImageURL") {
-        [optionText, optionUrl] = option.split("|");
-      }
-      return (
-        <div
-          key={index}
-          className={
-            option === answers[questionIndex]?.userAnswer
-              ? styles.selectedOption
-              : ""
-          }
-          onClick={() => handleOptionClick(option)}
-        >
-          {question.optionType === "text" ? (
-            option
-          ) : question.optionType === "imageURL" ? (
-            <img src={option} alt="Option" />
-          ) : question.optionType === "textAndImageURL" ? (
-            <div className={styles.textAndUrl}>
-              <img src={optionUrl} alt="Option" />
-              <p>{optionText}</p>
-            </div>
-          ) : null}
-        </div>
-      );
-    });
-  };
-
-  const question = quizzes?.questions[questionIndex];
-
   return (
     <>
-      {!isSubmitting ? (
+      {!showResult ? (
         <div className={styles.parent}>
           <div className={styles.childBox}>
-            {quizzes && question && (
+            {quizzes && quizzes.questions[questionIndex] && (
               <>
                 <section className={styles.section_1}>
                   <span>
                     {questionIndex + 1}/{quizzes.questions.length}
                   </span>
-                  {quizzes.quizType !== "Poll" && (
+                  {quizzes.type !== "Poll" && (
                     <span className={styles.timer}>00:{timer}s</span>
                   )}
                 </section>
-                <h1>{question.question}</h1>
-                <section className={styles.section_2}>{renderOptions()}</section>
+                <h1>{quizzes.questions[questionIndex].question}</h1>
+                <section className={styles.section_2}>
+                  {quizzes.questions[questionIndex].options.map(
+                    (option, index) => {
+                      const optionKey = Object.keys(option)[0];
+                      return (
+                        <div
+                          key={index}
+                          className={`${styles.option} ${
+                            option === answers[questionIndex]?.userAnswer
+                              ? styles.selectedOption
+                              : ""
+                          }`}
+                          onClick={() => handleOptionClick(option)}
+                        >
+                          {quizzes.questions[questionIndex].optionsType ===
+                            "text" && option[optionKey].text}
+                          {quizzes.questions[questionIndex].optionsType ===
+                            "imageURL" && (
+                            <img src={option[optionKey].imageURL} alt="Option" />
+                          )}
+                          {quizzes.questions[questionIndex].optionsType ===
+                            "textAndImageURL" && (
+                            <div className={styles.textAndUrl}>
+                              <img src={option[optionKey].imageURL} alt="Option" />
+                              <p>{option[optionKey].text}</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                  )}
+                </section>
                 {questionIndex < quizzes.questions.length - 1 ? (
                   <button onClick={nextQuestion}>Next</button>
                 ) : (
@@ -148,7 +158,7 @@ const PlayModal = () => {
           </div>
         </div>
       ) : (
-        <PlayResultModal quizType={quizzes.quizType} score={score} />
+        <PlayResultModal quizType={quizzes.type} score={score} />
       )}
     </>
   );

@@ -15,29 +15,33 @@ const QuestionList = ({
   return (
     <div className={styles.questionsNumbersRounded}>
       <div className={styles.RoundedNumber}>
-        {quizQuestions.map((question, index) => (
-          <button
-            key={index}
-            id={question.id}
-            onClick={() => setQuestionIndex(question.id)}
-            className={styles.questionNumber}
-            style={questionIndex === question.id ? selected : {}}
-          >
-            {index + 1}
-            {index !== 0 && (
-              <span
-                className={styles.removeQuestion}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteExtraQuestion(index);
-                }}
-              >
-                X
-              </span>
-            )}
-          </button>
-        ))}
-        {quizQuestions.length < 5 && (
+        {Array.isArray(quizQuestions) && quizQuestions.length > 0 ? (
+          quizQuestions.map((question, index) => (
+            <button
+              key={index}
+              id={question.id}
+              onClick={() => setQuestionIndex(question.id)}
+              className={styles.questionNumber}
+              style={questionIndex === question.id ? selected : {}}
+            >
+              {index + 1}
+              {index !== 0 && (
+                <span
+                  className={styles.removeQuestion}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteExtraQuestion(index);
+                  }}
+                >
+                  X
+                </span>
+              )}
+            </button>
+          ))
+        ) : (
+          <b>Loading questions.... </b>
+        )}
+        {Array.isArray(quizQuestions) && quizQuestions.length < 5 && (
           <button className={styles.PlusBtn} onClick={addExtraQuestion}>
             +
           </button>

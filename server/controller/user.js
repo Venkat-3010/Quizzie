@@ -3,29 +3,38 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 const userRegister = async (req, res) => {
-  const { name, email, password } = req.body;
-  const formattedEmail = email.toLowerCase();
   try {
+    const { name, email, password } = req.body;
+    const formattedEmail = email.toLowerCase();
     if (!name || !email || !password ) {
-      return res.status(400).json({
+      return res.status(400)
+      .json({
+        message: "please fill all the fields",
+      })
+      .send({
         message: "please fill all the fields",
       });
     }
 
     let existingUser = await User.findOne({ email: formattedEmail });
     if (existingUser) {
-      return res.status(400).json({
+      return res.status(400)
+      .send({
+        message: "User already exists",
+      })
+      .json({
         message: "User already exists",
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userData = new User({
+    const user = new User({
       name,
       email: formattedEmail,
       password: hashedPassword
     });
-    await userData.save();
+    await user.save();
+    const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
     res.json({
       message: "User registered successfully",
     });
@@ -63,8 +72,8 @@ const userLogin = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      { user: { _id: userDetails.id } },
+    const token = jwt.sign( 
+      {id: userDetails.id },
       process.env.SECRET_KEY,
       { expiresIn: "60h" }
     );
