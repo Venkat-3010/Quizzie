@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import styles from "../QuizQuestionsModal/QuizQuestionsModal.module.css";
 import { useNavigate } from "react-router-dom";
 import { QuizzieContext } from "../../../App";

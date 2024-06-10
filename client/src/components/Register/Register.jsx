@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Register.module.css";
 import { authRegister } from "../../api/apiAuth";
 import { toast } from "react-toastify";

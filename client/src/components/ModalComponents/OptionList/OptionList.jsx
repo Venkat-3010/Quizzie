@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../QuizQuestionsModal/QuizQuestionsModal.module.css";
 import deleteIcon from "../../../assets/material-symbols_delete.png";
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getAllUserQuizzes } from "../../api/apiQuiz"; 
 import styles from "./Analytics.module.css";
 import { toast } from "react-toastify";

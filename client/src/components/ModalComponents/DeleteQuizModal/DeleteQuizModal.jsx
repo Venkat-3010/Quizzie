@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./DeleteQuizModal.module.css";
 import { toast } from "react-toastify";
 import { deleteQuiz } from "../../../api/apiQuiz";

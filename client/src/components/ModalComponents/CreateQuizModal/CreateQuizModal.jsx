@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./CreateQuizModal.module.css";
 import QuizQuestionsModal from "../QuizQuestionsModal/QuizQuestionsModal";

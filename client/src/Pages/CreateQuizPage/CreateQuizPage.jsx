@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import styles from "./CreateQuiz.module.css";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import CreateQuizModal from '../../components/ModalComponents/CreateQuizModal/CreateQuizModal'

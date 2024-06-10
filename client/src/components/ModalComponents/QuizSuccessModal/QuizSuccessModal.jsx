@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { toast } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
 import styles from "./QuizSuccessModal.module.css";

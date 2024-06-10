@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./TrendCard.module.css";
 import eye from "../../assets/icon-park-outline_eyes.png";
 

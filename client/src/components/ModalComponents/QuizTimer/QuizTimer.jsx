@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styles from './QuizTimer.module.css';
 
 const QuizTimer = ({timer, setTimer}) => {

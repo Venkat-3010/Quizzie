@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import styles from "./QuizQuestionsModal.module.css";
 import { createQuiz } from "../../../api/apiQuiz";
 import { v4 as uuidv4 } from "uuid";

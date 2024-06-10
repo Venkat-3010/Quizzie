@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./PlayResultModal.module.css";
 import cup from "../../../assets/trophy.png";
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { QuizzieContext } from '../../App';
 import styles from './Dashboard.module.css';
 import Sidebar from '../../components/Sidebar/Sidebar'
