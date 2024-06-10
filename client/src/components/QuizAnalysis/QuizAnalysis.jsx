@@ -8,7 +8,6 @@ const QuizAnalysis = ({ quizType, quiz_id }) => {
   useEffect(() => {
     const fetchQuizAnalysis = async () => {
       try {
-        console.log();
         const response = await quizAnalysis(quiz_id);
         setQuizzes(response.quiz);
       } catch (error) {

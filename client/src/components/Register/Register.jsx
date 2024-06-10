@@ -63,7 +63,6 @@ const Register = ({ onSuccess }) => {
         position: "bottom-right",
         theme: "dark",
       });
-      // console.log("formData", formData);
       onSuccess();
     } catch (error) {
       toast.error("Registration failed", {

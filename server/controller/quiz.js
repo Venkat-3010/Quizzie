@@ -15,7 +15,6 @@ const createQuiz = async (req, res) => {
     const newQuiz = await Quiz.create({
       title,
       questions: questions.map((q) => {
-        console.log(q);
         if (type === "Poll") {
           const totalParticipants = {};
           if (q.options) {
@@ -23,7 +22,6 @@ const createQuiz = async (req, res) => {
               totalParticipants[option] = 0;
             });
           }
-          console.log(totalParticipants);
           return {
             ...q,
             totalParticipants,
@@ -101,7 +99,6 @@ const QuizAnalysis = async (req, res) => {
   try {
     const { quiz_id } = req.params;
     const userId = req.user._id;
-    console.log(quiz_id);
     const quiz = await Quiz.findOne({ _id: quiz_id, createdBy: userId });
     if (!quiz) {
       return res.status(404).json({
@@ -217,7 +214,6 @@ const checkQuizAnswers = async (req, res) => {
               question.totalParticipants[userAnswerKey] = 0;
             }
             question.totalParticipants[userAnswerKey] += 1;
-            console.log("totalParticipants", question.totalParticipants);
           } else {
             console.log(
               "Selected option not found in question options:",

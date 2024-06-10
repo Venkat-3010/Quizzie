@@ -31,8 +31,6 @@ const Dashboard = () => {
         (total, quiz) => total + quiz.impressions,
         0
       );
-      
-      // console.log(data)
 
       setTotalQuizzes(sortedQuiz);
       setTotalQuestions(totQuestions);

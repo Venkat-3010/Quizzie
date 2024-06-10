@@ -11,7 +11,7 @@ const Sidebar = ({ onOpenModal }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
     toast.info("Logged out", {
       position: "bottom-right",
       theme: "dark",
@@ -21,6 +21,7 @@ const Sidebar = ({ onOpenModal }) => {
 
   const handleMenu = (item) => {
     setSelectedItem(item);
+    navigate(`/${item.toLowerCase()}`);
   };
 
   useEffect(() => {
@@ -59,7 +60,7 @@ const Sidebar = ({ onOpenModal }) => {
             selectedItem === "Create Quiz" ? styles.selected : ""
           }`}
           onClick={() => {
-            handleMenu("Create Quiz");
+            handleMenu("Createquiz");
             onOpenModal();
           }}
         >

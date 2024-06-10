@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./CreateQuizModal.module.css";
 import QuizQuestionsModal from "../QuizQuestionsModal/QuizQuestionsModal";
 import { useNavigate } from "react-router-dom";
+import { QuizzieContext } from "../../../App";
 
 const CreateQuizModal = ({
-  onClose,
   quizTitle,
   setQuizTitle,
   quizType,
@@ -13,6 +13,7 @@ const CreateQuizModal = ({
   quiz_id,
   setQuiz_id,
 }) => {
+  const {setSelectedItem} = useContext(QuizzieContext)
   const [quizData, setQuizData] = useState({
     title: quizTitle,
     quizType: quizType,
@@ -37,8 +38,8 @@ const CreateQuizModal = ({
   };
 
   const handleClose = () => {
-    setShowCreateQuestion(false);
-    navigate('/home')
+    setSelectedItem('Dashboard');
+    navigate('/dashboard');
   }
 
   return (
@@ -50,8 +51,6 @@ const CreateQuizModal = ({
           quiz_id={quiz_id}
           setQuiz_id={setQuiz_id}
           setQuizType={setQuizType}
-          setQuestionPopup={setShowCreateQuestion}
-          onClose={handleClose}
         />
       ) : (
         <div className={styles.modalContainer}>
@@ -98,7 +97,7 @@ const CreateQuizModal = ({
             )}
           </div>
           <div className={styles.validateBtns}>
-            <button className={styles.cancelBtn} onClick={onClose}>
+            <button className={styles.cancelBtn} onClick={handleClose}>
               Cancel
             </button>
             <button className={styles.continueBtn} onClick={handleContinueBtn}>

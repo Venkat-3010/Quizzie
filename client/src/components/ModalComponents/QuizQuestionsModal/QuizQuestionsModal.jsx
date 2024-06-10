@@ -12,7 +12,6 @@ import { QuizzieContext } from "../../../App";
 import { toast } from "react-toastify";
 
 const QuizQuestionsModal = ({
-  onClose,
   quizTitle,
   quizType,
   setQuiz_id,
@@ -204,12 +203,11 @@ const QuizQuestionsModal = ({
             )}
           </div>
           <ControlButtons
-            onClose={onClose}
             handleCreateQuiz={handleCreateQuiz}
           />
         </div>
       ) : (
-        <QuizSuccessModal quizShareLink={quizShareLink} onClose={onClose} />
+        <QuizSuccessModal quizShareLink={quizShareLink}/>
       )}
     </>
   );

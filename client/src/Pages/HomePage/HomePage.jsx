@@ -16,7 +16,6 @@ const HomePage = () => {
   const handleClose = () => {
     setIsOpen(false);
     setSelectedItem("Dashboard");
-    // console.log(user)
   };
 
   return (

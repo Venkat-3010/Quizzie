@@ -35,7 +35,6 @@ const UpdateQuizModal = ({ onClose, updateQuiz }) => {
       (async () => {
         try {
           const response = await quizAnalysis(updateQuiz);
-          console.log(response.quiz);
           setQuizType(response.quiz.quizType);
           setQuizQuestions(response.quiz.questions);
           setTimer(response.quiz.timer);
@@ -120,7 +119,6 @@ const UpdateQuizModal = ({ onClose, updateQuiz }) => {
           setQuizShareLink(
             `${window.location.origin}/sharedQuiz/${response.id}`
           );
-          // console.log(response.quiz, quizShareLink);
         } else {
           console.error("No data returned from API.");
           toast.error(`An error occurred while updating the quiz`);

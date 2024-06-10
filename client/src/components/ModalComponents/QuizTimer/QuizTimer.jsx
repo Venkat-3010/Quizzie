@@ -6,7 +6,6 @@ const QuizTimer = ({timer, setTimer}) => {
   const handleQuizTimer = (event) => {
     setTime(event.target.value)
     setTimer(event.target.value)
-    // console.log(time)
   }
   return (
     <div className={styles.QuizTimerContainer}>

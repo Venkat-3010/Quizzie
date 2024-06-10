@@ -9,7 +9,6 @@ const createQuiz = async (quizData) => {
         'Authorization': localStorage.getItem("token")
       },
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error creating q", error);
@@ -24,7 +23,6 @@ const getAllUserQuizzes = async (userId) => {
         'Authorization': localStorage.getItem("token")
       },
     });
-    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error getting user quizzes", error);
@@ -39,7 +37,6 @@ const quizAnalysis = async (quiz_id) => {
           'Authorization': localStorage.getItem("token")
         }
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error getting quiz Analysis", error);
@@ -50,7 +47,6 @@ const quizAnalysis = async (quiz_id) => {
 const getQuizById = async (quiz_Id) => {
   try {
     const response = await axios.get(`${quizUrl}/quizzes/${quiz_Id}`);
-    // console.log("response", response.data.quiz);
     return response.data;
   } catch (error) {
     console.log("error getting quiz by id", error);
@@ -65,7 +61,6 @@ const deleteQuiz = async (quiz_id) => {
         'Authorization': localStorage.getItem("token")
       },
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error deleting quiz", error);
@@ -96,7 +91,6 @@ const getQuizByIdForUpdate = async (quiz_id, quizData) => {
         },
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log("error getting quiz by id for update", error);

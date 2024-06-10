@@ -3,7 +3,7 @@ import styles from "./DeleteQuizModal.module.css";
 import { toast } from "react-toastify";
 import { deleteQuiz } from "../../../api/apiQuiz";
 
-const DeleteQuizModal = ({ setShowDeleteModal, quizId }) => {
+const DeleteQuizModal = ({ setShowDeleteModal, setDeleted, quizId }) => {
   const handleDeleteQuiz = async () => {
     try {
       const data = await deleteQuiz(quizId);
@@ -13,6 +13,7 @@ const DeleteQuizModal = ({ setShowDeleteModal, quizId }) => {
           position: "bottom-right",
         });
         setShowDeleteModal(false);
+        setDeleted(true);
       }
     } catch (error) {
       console.log(error);

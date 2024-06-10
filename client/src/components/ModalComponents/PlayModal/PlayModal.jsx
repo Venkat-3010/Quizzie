@@ -18,7 +18,6 @@ const PlayModal = () => {
     const fetchQuiz = async () => {
       try {
         const response = await getQuizById(id);
-        console.log(response);
         const quiz = response.quiz;
 
         const formattedOptions = quiz.questions.map((question) => ({
@@ -27,7 +26,6 @@ const PlayModal = () => {
           .filter(key => question.options[0][key].text || question.options[0][key].imageURL) 
           .map(key => ({ [key]: question.options[0][key] }))
         }));
-        console.log(formattedOptions);
 
         setQuizzes({ ...quiz, questions: formattedOptions  });
         setTimer(response.quiz.timer);
@@ -84,13 +82,11 @@ const PlayModal = () => {
         ...answer,
         userAnswer: answer.userAnswer,
       }));
-      console.log(formattedAnswers);
 
       const response = await checkQuizAnswers(id, {answers : formattedAnswers});
       if (quizzes.quizType === "Poll") {
         toast.success("Thanks for participating in the poll!");
       } else {
-        console.log(response.score);
         setScore(`${response.score}/${quizzes.questions.length}`);
         toast.success("Thanks for participating in the quiz!");
       }

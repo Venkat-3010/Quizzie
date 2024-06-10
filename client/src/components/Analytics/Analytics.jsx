@@ -19,13 +19,14 @@ const Analytics = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editQuizId, setEditQuizId] = useState("");
   const [quizAnalysis, setQuizAnalysis] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   const fetchQuizzes = async (userId) => {
     try {
       const data = await getAllUserQuizzes(userId);
       const sortedByDate = data.sortedByDate || [];
       setQuizzes(sortedByDate);
-      console.log(data);
+      setDeleted(false);
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch quizzes");
@@ -51,13 +52,11 @@ const Analytics = () => {
 
   const handleQuizEdit = (e) => {
     setEditQuizId(e.target.id);
-    console.log(e.target.id);
     setShowEditModal(true);
   };
 
   const handleRemoveQuiz = (e) => {
     setQuizId(e.target.id);
-    console.log(e.target.id)
     setShowDeleteModal(true);
   };
 
@@ -72,7 +71,7 @@ const Analytics = () => {
     if (userId) {
       fetchQuizzes(userId);
     }
-  }, [userId]);
+  }, [userId, deleted]);
 
   const onClose = () => {
     setShowEditModal(false);
@@ -82,7 +81,6 @@ const Analytics = () => {
   const handleLinkClick = (type, id) => {
     setQuizAnalysis(true);
     setCurrentQuizType(type);
-    // console.log(currentQuizType);
     setQuizId(id);
   };
 
@@ -155,6 +153,7 @@ const Analytics = () => {
             <DeleteQuizModal
               quizId={quizId}
               setShowDeleteModal={setShowDeleteModal}
+              setDeleted={setDeleted}
             />
           )}
           {showEditModal && (

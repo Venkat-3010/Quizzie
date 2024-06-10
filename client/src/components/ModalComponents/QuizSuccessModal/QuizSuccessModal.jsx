@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { toast } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
 import styles from "./QuizSuccessModal.module.css";
+import { useNavigate } from "react-router-dom";
+import { QuizzieContext } from "../../../App";
 
-const QuizSuccessModal = ({quizShareLink, onClose}) => {
+const QuizSuccessModal = ({quizShareLink}) => {
+  const {setSelectedItem} = useContext(QuizzieContext);
+  const navigate = useNavigate();
   const handleLinkShare = async () => {
     const url = quizShareLink;
     try {
@@ -16,7 +20,8 @@ const QuizSuccessModal = ({quizShareLink, onClose}) => {
   };
 
   const handleCancel = () => {
-    onClose();
+    setSelectedItem('Dashboard');
+    navigate('/dashboard');
   }
 
   return (
