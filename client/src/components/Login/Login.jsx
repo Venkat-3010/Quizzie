@@ -1,12 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styles from "./Login.module.css";
 import { authLogin } from "../../api/apiAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { QuizzieContext } from "../../App";
 
 const Login = () => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(QuizzieContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -37,7 +35,6 @@ const Login = () => {
       });
 
       navigate("/home");
-      setIsLoggedIn(true);
       console.log("Successfully logged in", result);
     }
   };
